@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>dev-io.ru/posts/0x002/</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <meta name="googlebot" content="index,follow,snippet,archive">
+    <link rel="stylesheet" href="https://dev-io.ru/hugo-theme-console/css/terminal-0.7.2.min.css">
+    <link rel="stylesheet" href="https://dev-io.ru/hugo-theme-console/css/animate-4.1.1.min.css">
+    <link rel="stylesheet" href="https://dev-io.ru/hugo-theme-console/css/console.css">
+    
+      <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+       <meta property="og:title" content="Protected MBR" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://dev-io.ru/posts/0x002/" /><meta property="article:published_time" content="2023-09-21T11:54:19+03:00" />
+
+
+
+<meta name="twitter:title" content="Protected MBR"/>
+<meta name="twitter:description" content="Every programmer who wants to deeply understand the principles of the computer’s low-level work rules thinks about writing their own operating system. No matter how complicated your OS is going to be, the first thing you need to do is to implement the Main Boot Record (MBR). MBR is the first program that BIOS executes on the bootable device. That article describes how to implement custom MBR protected with a password."/>
+
+</head>
+<body class="terminal">
+    <div class="container">
+        <div class="terminal-nav">
+          <header class="terminal-logo">
+            <div class="logo terminal-prompt">
+              
+              
+              <a href="https://dev-io.ru/" class="no-style ">dev-io.ru</a>:~# 
+              <a href='https://dev-io.ru/posts'>posts</a>/<a href='https://dev-io.ru/posts/0x002'>0x002</a>/</div></header>
+          <nav class="terminal-menu">
+            <ul vocab="https://schema.org/" typeof="BreadcrumbList">
+                
+            </ul>
+          </nav>
+        </div>
+    </div>
+
+    <div class="container " >
+        
+<h1>Protected MBR</h1>
+
+Sep. 21, 2023
+
+
+<br/><br/>
+<p>Every programmer who wants to deeply understand the principles of the computer’s low-level work rules thinks about writing their own operating system. No matter how complicated your OS is going to be, the first thing you need to do is to implement the Main Boot Record (MBR). MBR is the first program that BIOS executes on the bootable device. That article describes how to implement custom MBR protected with a password.</p>
+<h3 id="theory-of-os-loading-and-why-we-need-mbr">Theory of OS loading, and why we need MBR</h3>
+<p>As described in the first paragraph, MBR is the first program that BIOS loads and executes on your bootable device (hard drive, floppy or USB drive). BIOS performs the following steps:</p>
+<ul>
+<li>Read the first 512 bytes (first sector) of the device we are booting from;</li>
+<li>Those 512 bytes placed into memory, start from the 0x7c00 address;</li>
+<li>BIOS jumps to 0x7c00 (first instruction) of the read code;</li>
+<li>After that, MBR will be executed (it can check the partition table, load the OS kernel, or load another bootloader).</li>
+</ul>
+<h3 id="mbr-structure">MBR structure</h3>
+<p>MBR contains:</p>
+<ul>
+<li>Boot code (directly executable by CPU)</li>
+<li>Partition table</li>
+<li>Boot signature (two bytes 0x55, 0xAA), every MBR must end with these two bytes.</li>
+</ul>
+<p>In general, MBR checks the partition table, finds the active partition and starts partition loading.</p>
+<p>In our case, we want to protect our MBR with a password. For simplifying our task we will set the limitations:</p>
+<ul>
+<li>Our MBR will be loaded from a floppy drive (because we don’t want to corrupt our “real” MBR)</li>
+<li>Password will be placed directly into MBR</li>
+<li>The computer performs boot from floppy, asks the user for a password, and if the password, given by the user, matches with the password in code, MBR will load and execute “real” MBR from the hard drive.</li>
+</ul>
+<p>Which instruments we need:</p>
+<ul>
+<li>Flat Assembler (FASM);</li>
+<li>Emulator (you can try to execute code into emu8086 - 8086 processor emulator, it has the ability to emulate loading from floppy, but not the hard drive, or you can use Bochs emulator, it is closer to a real computer, but its speed is much slower than VirtualBox or other hypervisors).</li>
+</ul>
+<h3 id="first-steps">First steps</h3>
+<p>Firstly, we will create a sample project and write the following code:</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">org 7c00h
+use16
+  
+password_str db &#39;Enter password:&#39;, 0
+password db 6 dup(0)
+original_password db &#39;OtUs77&#39;, 0
+db 510-($-$$) dup(0), 0x55, 0xaa
+buf:
+</code></pre><p>org 7c00h is a directive that tells FASM “our code will be loaded at address 7c00h (or 0x7c00 - it is the same). The directive is important, because without it FASM can’t correctly define the offsets of subprograms, and may jump to incorrect addresses in memory.</p>
+<p>use16 tells FASM to generate 16-bit code.</p>
+<p>password_str, password, and original_password are the strings for storing “Enter password:”, the password that the user will enter, and the password which protects our MBR from unauthenticated users.</p>
+<p>The last two strings just place bytes 0x55 0xAA at the end of the MBR.</p>
+<p>That code will do nothing because it does not define any operation, but now we have a “boilerplate”. Let&rsquo;s try to show the string “Enter password:” to the user.</p>
+<h3 id="printing-on-the-screen">Printing on the screen</h3>
+<p>To print any ASCII character on the screen we have an interrupt int10h. This interrupt has a few functions, but we need only printing on the screen, so we use the 0Eh function of this interrupt.</p>
+<p>Use the int10h as follows:</p>
+<ul>
+<li>Place value 0Eh into AH register;</li>
+<li>Place ASCII code of the printed character into AL register;</li>
+<li>Call the interrupt.</li>
+</ul>
+<p>For printing our string we will use loops.
+A little disclaimer: in this article, we will implement a few procedures, so we will use the calling convention stdcall. It means that the arguments of the callable procedure will be placed into the stack, from right to left (the last parameter is the first).</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">org 7c00h
+use16
+
+; Load the “Enter password:” string address into AX
+lea ax, [password_str]
+; Push it to the stack
+push ax
+; Call “print” subprogram
+call print
+
+; Print function
+print:
+; Prologue. Save original BP value to the stack
+    push bp
+; Copy SP value to BP register, next time we will use BP instead of SP
+; Because we don&#39;t need to corrupt its value
+    mov bp, sp
+; Set the CX register to zero, assembler’s loop uses CX as a loop counter, but we will print the characters, while we don’t get zero, means the end of the string (null-terminated strings indicate the end of the string by appending zero bytes)
+    xor cx, cx
+; Copy the first argument - password_str address from the stack to the SI register
+    mov si, [bp+4]
+; Printing loop
+    loop_print:
+; lodsb loads a byte from the address that is placed into the SI register and increments the SI value to the next byte. Byte, loaded by lodsb, is placed into AL register
+        lodsb
+; Check AL for the string terminator
+        test al, al
+; If we get the end of the string - loop ends
+        jz end_print
+; If not, we call the int10h with 0Eh function to print the character from AL
+        mov ah, 0Eh
+        int 10h
+    loop loop_print
+; Epilogue - restore original BP value and return
+    end_print:
+    mov sp, bp
+    pop bp
+    ret
+  
+password_str db &#39;Enter password:&#39;, 0
+password db 6 dup(0)
+original_password db &#39;OtUs77&#39;, 0
+db 510-($-$$) dup(0), 0x55, 0xaa
+buf:
+</code></pre><p>Try to compile it and run it in any emulator. You will see the “Enter password:” string on the screen! That&rsquo;s much better, don&rsquo;t you think?</p>
+<h3 id="reading-user-input">Reading user input</h3>
+<p>We have successfully dealt with printing, now we need to read the user&rsquo;s password. If we have the interrupt to print we have the interrupt to read. Int 16h and its 00h function do the reading of keyboard input. We need to read the input and store the values into our password string.</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">org 7c00h
+use16
+
+jmp loop_protect
+
+lea ax, [password_str]
+push ax
+call print
+
+; Save the address of the memory area, used to store the user&#39;s input
+lea di, [password]
+; Push it to the stack as the argument to the function
+push di
+; Call read function
+call read
+    
+print:
+    push bp
+    mov bp, sp
+    xor cx, cx
+    mov si, [bp+4]
+    loop_print:
+        lodsb
+        test al, al
+        jz end_print
+        mov ah, 0Eh
+        int 10h
+    loop loop_print
+    
+    end_print:
+    mov sp, bp
+    pop bp
+    ret
+
+read:
+; Prologue. Save BP and copy SP to BP
+    push bp
+    mov bp, sp
+; We suppose that our password contains 6 characters or less, so users can input up to 6 characters, but not more. CX is used as the loop counter.
+    mov cx, 6
+; Copy the password’s memory area address to the DI register. DI is used by the stosb command that saves byte from AH to the memory block, addressed by DI, and increases DI value
+    mov di, [bp+4]
+    
+    loop_read:
+; Input interrupt, we wait for the user&#39;s input
+        mov ah, 0
+        int 16h    
+; Check the value, if the user presses Enter (1Ch code) - it is the end of the input
+        cmp ah, 1Ch
+; If input ends we don’t need to read more
+        je end_read
+; Save byte from AH to memory (address stored into DI)
+        stosb
+; Print ‘*’ to the screen so that the user may see the keyboard works :)
+        mov ah, 0Eh
+        mov al, 2Ah
+        int 10h
+    loop loop_read
+            
+    end_read:
+    mov sp, bp
+    pop bp
+    ret
+  
+password_str db &#39;Enter password:&#39;, 0
+password db 6 dup(0)
+original_password db &#39;OtUs77&#39;, 0
+db 510-($-$$) dup(0), 0x55, 0xaa
+buf:
+</code></pre><p>Ending up our print-read cycle, we have “Enter password:” output, and user input processing. Next, we need to compare the passwords. For that reason, we will implement the “check_password” function.</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">org 7c00h
+use16
+
+lea ax, [password_str]
+push ax
+call print
+lea di, [password]
+push di
+call read
+
+; Load user input to DI and push it to the stack
+lea di, [password]
+push di
+; Load the original password to DI and push it to the stack
+lea di, [original_password]
+push di
+; Call check
+call check_password
+    
+print:
+; Print
+
+read:
+; Read
+
+check_password:
+    push bp
+    mov bp, sp
+; First of all, we need to clear registers AX, BX, and DX.
+; We will use only the lodsb command that loads a byte into the AL register, so we need to load a byte of the user’s input, and original password, and compare them. DX will be used as temp SI value, because lodsb increases SI, but we have two different memory areas, from which we load bytes.
+    xor ax, ax
+    xor bx, bx
+    xor dx, dx
+; Only 6 characters
+    mov cx, 6
+; Load the first argument from the stack
+    mov si, [bp+4]
+
+; Load the second argument from the stack
+    mov dx, [bp+6]
+
+; Loop for checking bytes equality one-by-one
+    loop_check:
+; Load the first byte of the original password
+        lodsb
+; Move it to BX, because the next lodsb will change the AL value
+        mov bx, ax
+; Save SI - memory address of original password byte, that will be read next time we call lodsb
+        push si
+; Restore user’s password memory address from DX and read byte to AL
+        mov si, dx
+        lodsb
+; compare AX with BX. CMP will set ZF flag if AX and BX are equal
+        cmp bx, ax
+; If the bytes are not equal ZF will be 0 and we will end the check
+        jz end_check
+; Move to the next bytes, save SI for the user’s password to DX, and restore SI value of the original password from the stack. The check will go to compare the next bytes and stop when CX becomes zero (all bytes are checked), or when the unequal bytes were found.
+        mov dx, si
+        pop si 
+        
+    loop loop_check
+    
+    end_check:
+    mov sp, bp
+    pop bp
+    ret  
+  
+password_str db &#39;Enter password:&#39;, 0
+password db 6 dup(0)
+original_password db &#39;OtUs77&#39;, 0
+db 510-($-$$) dup(0), 0x55, 0xaa
+buf:
+</code></pre><p>All right! Now we can:</p>
+<ul>
+<li>Show the “Enter password:” string to the user;</li>
+<li>Read the password;</li>
+<li>Compare passwords.</li>
+</ul>
+<p>All we need is the implementation of the original MBR loading and executing. To do that we need to perform the following steps:</p>
+<ul>
+<li>Backup our current MBR code into a different memory location;</li>
+<li>Pass the control to the copy of our MBR;</li>
+<li>Load the original MBR code into 0x7c00;</li>
+<li>Jump to 0x7c00.</li>
+</ul>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">org 7c00h
+use16
+
+; While users are not passing the correct password we will ask them to input
+jmp loop_protect
+
+loop_protect:
+    lea ax, [password_str]
+    push ax
+    call print
+    lea di, [password]
+    push di
+    call read
+    
+    lea di, [password]
+    push di
+    lea di, [original_password]
+    push di
+    call check_password
+
+; Clear the screen
+    mov ax, 0
+    int 10h
+; If check_password doesn’t clear the ZF flag - passwords are equal, we can proceed
+    jnz load_mbr
+
+loop loop_protect
+
+; Save our custom MBR and do a different location
+load_mbr:
+; Clear interrupts
+        cli
+; Clear the registers and save the original MBR entry point to the stack
+        MOV SP, 0x7c00
+        XOR AX, AX
+        MOV SS, AX
+        MOV ES, AX
+        MOV DS, AX
+        PUSH DX
+; From which memory address we will get bytes
+        mov si, 0x7c00
+; Where we will store bytes
+        mov di, 0x0600
+; How many bytes to copy (0x200 = 512)
+        mov cx, 0x200
+; Clear direction flag
+        cld
+; Repeatedly copy bytes from DI to SI memory addresses while CX is not zero
+        rep movsb
+; Jump to stage2 - executing of our original MBR (i used constant addresses because FASM calculates offsets from 0x7c00)
+        jmp near stage2 - $$ + 0x0600 ; calc right offset to jump
+
+; load the original MBR
+stage2:
+; Enable interrupts
+    sti
+; Prepare to read, BX indicates the original MBR location because int 13h will load sectors to ES:BX address
+    mov bx, 0x7c00
+; Read the first sector from the hard drive by int 13h interrupt
+; AH = 02h means “read sector” function
+    mov ah, 02h
+; Sectors count
+    mov al, 1
+; HDD number (80h means the first HDD)
+    mov dl, 80h
+; Track number
+    mov ch, 0
+; Head number
+    mov dh, 0
+; Sector number
+    mov cl, 1
+; Call the interrupt
+    int 13h
+; Jump to original MBR code, loaded to 0x7c00
+    jmp $$ + 0x7600 ; in case of jmp problems
+    
+print:
+; print
+
+read:
+; read
+
+check_password:
+; check password
+  
+password_str db &#39;Enter password:&#39;, 0
+password db 6 dup(0)
+original_password db &#39;OtUs77&#39;, 0
+db 510-($-$$) dup(0), 0x55, 0xaa
+buf:
+</code></pre><p>Now you can build and execute the code.</p>
+<p>Useful materials:</p>
+<ul>
+<li><a href="https://github.com/dmitry8912/BootManager">Repository with sources and .bin file to run</a></li>
+<li><a href="https://www.scaler.com/topics/operating-system/master-boot-record/">Some theory about MBR</a></li>
+</ul>
+
+
+
+        <div class="footer">
+	<a href="/cv/en/">CV</a> | <a href="https://habr.com/ru/users/Dmitry89/">Habr</a> | <a href="https://medium.com/@dmitry8912/">Medium</a> | <a href="https://github.com/dmitry8912">GitHub</a> | <a href="https://otus.ru/instructors/2236">OTUS</a> | <a href="mailto:dmitry8912@gmail.com">Email</a> | <a href="https://t.me/dmitry8912">Telegram</a>
+</div>
+
+    </div>
+  </body>
+</html>

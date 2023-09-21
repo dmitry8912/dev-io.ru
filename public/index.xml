@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>dev-io.ru</title>
+    <link>https://dev-io.ru/</link>
+    <description>Recent content on dev-io.ru</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 21 Sep 2023 11:54:22 +0300</lastBuildDate><atom:link href="https://dev-io.ru/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SLAP - Programming language inspired by physical violence</title>
+      <link>https://dev-io.ru/posts/0x003/</link>
+      <pubDate>Thu, 21 Sep 2023 11:54:22 +0300</pubDate>
+      
+      <guid>https://dev-io.ru/posts/0x003/</guid>
+      <description>If you are reading this article I guess that you are interested in programming and building tools from scratch. Today I would like to tell you how to build a simple programming language and a virtual machine for its execution. Nowadays the community has a lot of technologies, languages and frameworks, so our current goal is not to invent “yet another useless language, and present it like a silver bullet”, but to understand how to design and animate programs written in our own language.</description>
+    </item>
+    
+    <item>
+      <title>Protected MBR</title>
+      <link>https://dev-io.ru/posts/0x002/</link>
+      <pubDate>Thu, 21 Sep 2023 11:54:19 +0300</pubDate>
+      
+      <guid>https://dev-io.ru/posts/0x002/</guid>
+      <description>Every programmer who wants to deeply understand the principles of the computer’s low-level work rules thinks about writing their own operating system. No matter how complicated your OS is going to be, the first thing you need to do is to implement the Main Boot Record (MBR). MBR is the first program that BIOS executes on the bootable device. That article describes how to implement custom MBR protected with a password.</description>
+    </item>
+    
+    <item>
+      <title>Implementing timeouts in Python&#39;s asynchronous generators</title>
+      <link>https://dev-io.ru/posts/0x001/</link>
+      <pubDate>Thu, 21 Sep 2023 11:49:47 +0300</pubDate>
+      
+      <guid>https://dev-io.ru/posts/0x001/</guid>
+      <description>Every python programmer who worked over increasing the IO performance of their script knows about async and its powerful cooperative multitasking abilities. As you may know async in Python becomes possible because of enhanced generators implementation by PEP-342. Along 2 and 3 versions, the abilities of generators in Python grew up, and today we have a powerful mechanism that allows suspension and resuming tasks of the main application thread.
+In this article I would like to tell you about the solution to a specific problem, that is placed between generators and coroutines.</description>
+    </item>
+    
+    <item>
+      <title>Cv</title>
+      <link>https://dev-io.ru/cv/my_cv/</link>
+      <pubDate>Thu, 21 Sep 2023 11:12:40 +0300</pubDate>
+      
+      <guid>https://dev-io.ru/cv/my_cv/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cv</title>
+      <link>https://dev-io.ru/cv/ru/</link>
+      <pubDate>Thu, 21 Sep 2023 11:12:40 +0300</pubDate>
+      
+      <guid>https://dev-io.ru/cv/ru/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CV (en)</title>
+      <link>https://dev-io.ru/cv/en/</link>
+      <pubDate>Thu, 21 Sep 2023 11:12:40 +0300</pubDate>
+      
+      <guid>https://dev-io.ru/cv/en/</guid>
+      <description>Personal Information &amp;amp; Overview Name: Pankrashov Dmitry
+About me:
+ 8+ years of experience working on real-world software, with disturbed teams Have an experience in software &amp;amp; hardware engineering (network engineering, higload) Intrested in low-level system programming  Stack &amp;amp; skills Operating systems:
+ Windows Linux (Ubuntu, CentOS, Fedora)  bash Stack:   Backend  Docker &amp;amp; K8s Databases  Microsoft SQL Server PostgreSQL MySQL Redis   Messqge queues  RabbitMQ Apache Kafka   PHP (5,7,8)  Pure PHP Laravel   .</description>
+    </item>
+    
+  </channel>
+</rss>

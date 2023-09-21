@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>dev-io.ru/posts/0x001/</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <meta name="googlebot" content="index,follow,snippet,archive">
+    <link rel="stylesheet" href="https://dev-io.ru/hugo-theme-console/css/terminal-0.7.2.min.css">
+    <link rel="stylesheet" href="https://dev-io.ru/hugo-theme-console/css/animate-4.1.1.min.css">
+    <link rel="stylesheet" href="https://dev-io.ru/hugo-theme-console/css/console.css">
+    
+      <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+       <meta property="og:title" content="Implementing timeouts in Python&#39;s asynchronous generators" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://dev-io.ru/posts/0x001/" /><meta property="article:published_time" content="2023-09-21T11:49:47+03:00" />
+
+
+
+<meta name="twitter:title" content="Implementing timeouts in Python&#39;s asynchronous generators"/>
+<meta name="twitter:description" content="Every python programmer who worked over increasing the IO performance of their script knows about async and its powerful cooperative multitasking abilities. As you may know async in Python becomes possible because of enhanced generators implementation by PEP-342. Along 2 and 3 versions, the abilities of generators in Python grew up, and today we have a powerful mechanism that allows suspension and resuming tasks of the main application thread.
+In this article I would like to tell you about the solution to a specific problem, that is placed between generators and coroutines."/>
+
+</head>
+<body class="terminal">
+    <div class="container">
+        <div class="terminal-nav">
+          <header class="terminal-logo">
+            <div class="logo terminal-prompt">
+              
+              
+              <a href="https://dev-io.ru/" class="no-style ">dev-io.ru</a>:~# 
+              <a href='https://dev-io.ru/posts'>posts</a>/<a href='https://dev-io.ru/posts/0x001'>0x001</a>/</div></header>
+          <nav class="terminal-menu">
+            <ul vocab="https://schema.org/" typeof="BreadcrumbList">
+                
+            </ul>
+          </nav>
+        </div>
+    </div>
+
+    <div class="container " >
+        
+<h1>Implementing timeouts in Python&#39;s asynchronous generators</h1>
+
+Sep. 21, 2023
+
+
+<br/><br/>
+<p>Every python programmer who worked over increasing the IO performance of their script knows about async and its powerful cooperative multitasking abilities. As you may know async in Python becomes possible because of enhanced generators implementation by PEP-342. Along 2 and 3 versions, the abilities of generators in Python grew up, and today we have a powerful mechanism that allows suspension and resuming tasks of the main application thread.</p>
+<p>In this article I would like to tell you about the solution to a specific problem, that is placed between generators and coroutines. That problem can be defined as a lack of ability to natively apply timeouts to asynchronous generators. Each yield pushes value to the caller function, but the caller never knows if the next value is being yielded  or not. This situation takes place when you build an RPC service over RabbitMQ. I&rsquo;ll say a few words about it.</p>
+<p>A client produces messages into a specific queue. The worker that performs any requested operation, listens to the queue, and, when it consumes a message, it starts processing it. When the process ends, the worker pushes the response message to an exclusive queue which exists only while the client holds the connection. The client may wait for a long time, especially if the worker is not sending a full response but splitting it into a few chunks instead. So, the client needs a mechanism that allows it to finish awaiting when a timeout occurs.</p>
+<p>Python’s &ldquo;async for&rdquo; doesn&rsquo;t have any timeout. Of course, you can wrap &ldquo;async for&rdquo; into function and run it with event_loop.wait_for, but this method applies timeout to the whole coroutine, but not for the time between chunks arrival. In my case, I need to set a timeout for the next chunk awaiting, not the whole process.</p>
+<p>To implement this, we need some knowledge about async iterators. First of all, the object that needs to be iterated must implement the <strong>aiter</strong>() method. The <strong>aiter</strong>() method must return an object that implements <strong>anext</strong>() method, which returns the next value of the iterated sequence.</p>
+<p>To implement a “timeoutable” iterator you need to perform the following steps:</p>
+<ul>
+<li>Create a class, that will return an object that implements <strong>aiter</strong> method;</li>
+<li><strong>aiter</strong> must return another object that implements <strong>anext</strong> method;</li>
+<li>That <strong>anext</strong> should call the <strong>anext</strong> of your iterable, and the call should apply a timeout by calling asyncio.wait_for(async_gen.<strong>anext</strong>(), timeout)</li>
+</ul>
+<p>Note that there are two possible ways of exiting the generator:</p>
+<ul>
+<li>Raising StopAsyncIteration</li>
+<li>Raising any other exception
+First option correctly breaks the async for loop. You should just implement a condition when StopAsyncIteration should be raised.</li>
+</ul>
+<p>Here is some sample code.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AsyncTimedIterable</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __init__(self, iterable, timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AsyncTimedIterator</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">def</span> __init__(self):
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>_iterator <span style="color:#f92672">=</span> iterable<span style="color:#f92672">.</span>__aiter__()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> __anext__(self):
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>                    result <span style="color:#f92672">=</span> <span style="color:#66d9ef">await</span> asyncio<span style="color:#f92672">.</span>wait_for(self<span style="color:#f92672">.</span>_iterator<span style="color:#f92672">.</span>__anext__(), int(timeout))
+</span></span><span style="display:flex;"><span>					<span style="color:#75715e"># if you want to stop the iteration just raise StopAsyncIteration using some conditions (when the last chunk arrives, for example)</span>
+</span></span><span style="display:flex;"><span>					<span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> result:
+</span></span><span style="display:flex;"><span>						<span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">StopAsyncIteration</span>
+</span></span><span style="display:flex;"><span>					<span style="color:#66d9ef">return</span> result
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">except</span> asyncio<span style="color:#f92672">.</span>TimeoutError <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">raise</span> e
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>_factory <span style="color:#f92672">=</span> AsyncTimedIterator
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __aiter__(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>_factory()
+</span></span></code></pre></div><p>Just wrap your iterable into that class and set timeout:
+timed_iter = AsyncTimedIterable(iter, 30)
+Then you may iterate through it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> timed_iter:
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">pass</span>
+</span></span></code></pre></div><p>When timeout occurs, asyncio.TimeoutError will rise, in other case StopAsyncIteration will correctly exit async for loop.</p>
+
+
+
+        <div class="footer">
+	<a href="/cv/en/">CV</a> | <a href="https://habr.com/ru/users/Dmitry89/">Habr</a> | <a href="https://medium.com/@dmitry8912/">Medium</a> | <a href="https://github.com/dmitry8912">GitHub</a> | <a href="https://otus.ru/instructors/2236">OTUS</a> | <a href="mailto:dmitry8912@gmail.com">Email</a> | <a href="https://t.me/dmitry8912">Telegram</a>
+</div>
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>dev-io.ru/posts/0x003/</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <meta name="googlebot" content="index,follow,snippet,archive">
+    <link rel="stylesheet" href="https://dev-io.ru/hugo-theme-console/css/terminal-0.7.2.min.css">
+    <link rel="stylesheet" href="https://dev-io.ru/hugo-theme-console/css/animate-4.1.1.min.css">
+    <link rel="stylesheet" href="https://dev-io.ru/hugo-theme-console/css/console.css">
+    
+      <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+       <meta property="og:title" content="SLAP - Programming language inspired by physical violence" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://dev-io.ru/posts/0x003/" /><meta property="article:published_time" content="2023-09-21T11:54:22+03:00" />
+
+
+
+<meta name="twitter:title" content="SLAP - Programming language inspired by physical violence"/>
+<meta name="twitter:description" content="If you are reading this article I guess that you are interested in programming and building tools from scratch. Today I would like to tell you how to build a simple programming language and a virtual machine for its execution. Nowadays the community has a lot of technologies, languages and frameworks, so our current goal is not to invent “yet another useless language, and present it like a silver bullet”, but to understand how to design and animate programs written in our own language."/>
+
+</head>
+<body class="terminal">
+    <div class="container">
+        <div class="terminal-nav">
+          <header class="terminal-logo">
+            <div class="logo terminal-prompt">
+              
+              
+              <a href="https://dev-io.ru/" class="no-style ">dev-io.ru</a>:~# 
+              <a href='https://dev-io.ru/posts'>posts</a>/<a href='https://dev-io.ru/posts/0x003'>0x003</a>/</div></header>
+          <nav class="terminal-menu">
+            <ul vocab="https://schema.org/" typeof="BreadcrumbList">
+                
+            </ul>
+          </nav>
+        </div>
+    </div>
+
+    <div class="container " >
+        
+<h1>SLAP - Programming language inspired by physical violence</h1>
+
+Sep. 21, 2023
+
+
+<br/><br/>
+<p>If you are reading this article I guess that you are interested in programming and building tools from scratch. Today I would like to tell you how to build a simple programming language and a virtual machine for its execution. Nowadays the community has a lot of technologies, languages and frameworks, so our current goal is not to invent “yet another useless language, and present it like a silver bullet”, but to understand how to design and animate programs written in our own language.</p>
+<p>Having discussed our goal, we can start the building process. First of all we need to describe some grammatics, that our language will follow.</p>
+<p>Disclaimer: I’m very interested in esoteric programming languages like HQ9+ whose creator has invented a bucket of esoteric programming languages, for example ZOMBIE, a programming language for evil necromancers. I would like to support the naming tradition and name the programming language that we are inventing SLAP. Simple Language for Aggressive Programmers. Its distinctive feature will be aggressive language statements that perform regular operations.</p>
+<h2 id="part-i---conception">Part I - Conception</h2>
+<p>Our language will be simple, and statements will look like assembler opcodes. It means that every line of code contains one operation, and there are no operations or statements that can be placed in two or more lines.</p>
+<p>SLAP will have a few groups of opcodes:</p>
+<ul>
+<li>Working with stack (push to the top, pop from the top);</li>
+<li>Mathematics (addition, subtraction, etc);</li>
+<li>Logics (great or less, equality);</li>
+<li>Screen I\O (read input, write output);</li>
+<li>Flow control (conditional\unconditional jumps).</li>
+</ul>
+<p>SLAP’s memory model will have only one global scope, because it has no ability to define functions, and no garbage collection, therefore, once defined, the variable will live forever.</p>
+<p>This is a minimalistic design which allows to implement any (or almost any) algorithm and interact with users. Let’s describe each group, its usage rules and restrictions.</p>
+<h3 id="variables-definition">Variables definition</h3>
+<pre tabindex="0"><code>PLOPIN name value
+</code></pre><p>PLOPIN opcode defines variables with specified name and value in global scope. There are no restrictions for name and value, but there are only two data types - int and string. If the value is not int, it will be saved as string.
+To redefine existing variable or assign value of any variable to another variable, you can use the following syntax:</p>
+<pre tabindex="0"><code>PLOPIN var1, var2
+</code></pre><h3 id="stack-usage">Stack usage</h3>
+<p>The virtual machine that executes our code, will use stack (sometime in the future. not now), so the language must have an ability to interact with stack.</p>
+<p>There are two opcodes:</p>
+<ul>
+<li><code>SLAPSHOT [var | val]</code> - pushes the value of the variable (or directly saves value) to the top of the stack;</li>
+<li><code>BACKSLAP [var]</code> - pops the value from the top of the stack and saves it into a variable. If the variable with the given name does not exist, it will be defined.</li>
+</ul>
+<h3 id="mathematics">Mathematics</h3>
+<p>Next, we need a few opcodes to do some arithmetical operations:</p>
+<ul>
+<li><code>operand1 SLAP operand2</code> is equal to operand1 = operand1 + operand2</li>
+<li><code>operand1 UNSLAP operand2</code> is equal to operand1 = operand1 - operand2</li>
+<li><code>operand1 MULTISLAP operand2</code> is equal to operand1 = operand1 * operand2</li>
+<li><code>operand1 MULTIUNSLAP operand2</code> is equal to operand1 = operand1 / operand2</li>
+</ul>
+<p>As you can see, we have no kind of operand to save the result into, so you can backup the value of the left operand to the stack, or use PLOPIN to copy your variable.</p>
+<h3 id="logics">Logics</h3>
+<p>These kinds of operands produce boolean values which can be used by flow control opcodes:</p>
+<ul>
+<li><code>operand1 PUNCHES operand2</code> - equal to operand1 &gt; operand2</li>
+<li><code>operand1 NONSMACK operand2</code> - equal to operand1 == operand2</li>
+</ul>
+<p>I would not implement opcodes for less, less than, greater than, and not equal operations just because I&rsquo;m lazy, and that two opcodes are enough to implement certain kinds of algorithms.</p>
+<p>It is necessary to mention that these opcodes will add the result of comparison on the top of the stack.</p>
+<h3 id="screen-io">Screen I\O</h3>
+<p>Opcodes that were defined above are necessary, but we have no way to interact with users. Let’s fix this!</p>
+<ul>
+<li><code>SLAPPUT [var]</code> - used to prompt user and save input to the variable</li>
+<li><code>SLAPSCREEN [var | val]</code> - used to print the value or the variable (or just direct value) to the screen</li>
+</ul>
+<h3 id="flow-control">Flow control</h3>
+<p>The most important part of our concept is flow control. In regular programming languages we have statements like if-else and loops that can be used for branching or cycling the flow of execution. Let the SLAP have the following abilities:</p>
+<ul>
+<li><code>[mark]</code> - any word or other character sequence that is not an opcode is used like a “bookmark”. Jump opcodes will seek the mark and pass the control to that instruction</li>
+<li><code>BEAT [mark]</code> - unconditionally jump to mark</li>
+<li><code>KNOCK [mark]</code> - more polite version of BEAT. KNOCK will jump to the mark only if there is a logical True (or 1) on the top of the stack (produced by PUNCHES or NONSMACK opcodes).</li>
+</ul>
+<p>As practice shows, this amount of opcodes and their meanings is enough to implement something like factorial calculation, or Fibonacci number calculation.</p>
+<h2 id="part-ii---implementation">Part II - Implementation</h2>
+<p>Now, we have decided on a language concept, and it’s time to talk about its implementation. We will use Python for the first implementation of a SLAP’s virtual machine.</p>
+<p>I have created the class SlapVM, which consists of:</p>
+<ul>
+<li>__code - list that contains code splitted into lines (by line ending \n)</li>
+<li>__ip - instruction pointer, tells us which line of our code we are executing now. It&rsquo;s useful to implement jump opcodes because if we are at line 10, and 10th line has an unconditionally jump opcode to 100th line, the next line must be 100, not 11.</li>
+<li>__stack - list which represents stack</li>
+<li>__vars - dictionary of variables in global scope. Keys are names, and values are values, of course.</li>
+</ul>
+<p>Furthermore, we need a bunch of methods:</p>
+<ul>
+<li>run(code) - a method that is an entrypoint of code execution. This method accepts source code, which consists of multiple lines, splitted by \n. Method saves code into SlapVM and runs line-by-line.</li>
+<li>run_line(code) - executes the line of code, changes SlapVM internal state.</li>
+<li>get_opcodes() - returns a dictionary that links opcode names with its implementations.</li>
+<li>Methods that implement opcodes.</li>
+</ul>
+<p>I need to say a few words about opcodes’ implementation. As you may see, all opcodes have operands. Opcode can have one or two operands. I will call them left operand (or left argument - larg) and right operand (or right argument - rarg). Each method implementing opcode must have the following sequence of arguments:</p>
+<pre tabindex="0"><code>def opcode(cls, larg, rarg, *args):
+	pass
+</code></pre><p>That helps us to keep all opcodes compatible with any count of arguments. Or you can just use an args list, but this approach is more implicit than the first, so I prefer the first convention.</p>
+<p>Our “sample” SlapVM code will look like the following:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> tokenize
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> io <span style="color:#f92672">import</span> StringIO
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SlapVM</span>(object):
+</span></span><span style="display:flex;"><span>    __code<span style="color:#f92672">=</span>list()
+</span></span><span style="display:flex;"><span>    __ip<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    __stack <span style="color:#f92672">=</span> list()
+</span></span><span style="display:flex;"><span>    __vars<span style="color:#f92672">=</span>dict()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@classmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(cls, code: str):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@classmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run_line</span>(cls, code):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@classmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_opcodes</span>(cls):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;slapshot&#34;</span>: cls<span style="color:#f92672">.</span>slapshot,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;backslap&#34;</span>: cls<span style="color:#f92672">.</span>backslap,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;slap&#34;</span>: cls<span style="color:#f92672">.</span>slap,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;unslap&#34;</span>: cls<span style="color:#f92672">.</span>unslap,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;multislap&#34;</span>: cls<span style="color:#f92672">.</span>multislap,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;multiunslap&#34;</span>: cls<span style="color:#f92672">.</span>multiunslap,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;slapscreen&#34;</span>: cls<span style="color:#f92672">.</span>slapscreen,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;slapput&#34;</span>: cls<span style="color:#f92672">.</span>slapput,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;knock&#34;</span>: cls<span style="color:#f92672">.</span>knock,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;beat&#34;</span>: cls<span style="color:#f92672">.</span>beat,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;plopin&#34;</span>: cls<span style="color:#f92672">.</span>plop_in,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;punches&#34;</span>: cls<span style="color:#f92672">.</span>punches,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;nonsmack&#34;</span>: cls<span style="color:#f92672">.</span>nonsmack
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">@classmethod</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">slapshot</span>(cls, var, <span style="color:#f92672">*</span>args):
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">pass</span>
+</span></span></code></pre></div><p>After that, I need to explain how the run and run_line methods work. Look at the following code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@classmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run</span>(cls, code: str):
+</span></span><span style="display:flex;"><span>        cls<span style="color:#f92672">.</span>__stack <span style="color:#f92672">=</span> list()
+</span></span><span style="display:flex;"><span>        cls<span style="color:#f92672">.</span>__vars<span style="color:#f92672">=</span>dict()
+</span></span><span style="display:flex;"><span>        cls<span style="color:#f92672">.</span>__code<span style="color:#f92672">=</span>list()
+</span></span><span style="display:flex;"><span>        cls<span style="color:#f92672">.</span>__ip<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        cls<span style="color:#f92672">.</span>__code<span style="color:#f92672">=</span>code<span style="color:#f92672">.</span>splitlines()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> cls<span style="color:#f92672">.</span>__ip <span style="color:#f92672">&lt;</span> len(cls<span style="color:#f92672">.</span>__code):
+</span></span><span style="display:flex;"><span>            cls<span style="color:#f92672">.</span>run_line(cls<span style="color:#f92672">.</span>__code[cls<span style="color:#f92672">.</span>__ip])
+</span></span><span style="display:flex;"><span>            cls<span style="color:#f92672">.</span>__ip <span style="color:#f92672">=</span> cls<span style="color:#f92672">.</span>__ip <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@classmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">run_line</span>(cls, code):
+</span></span><span style="display:flex;"><span>        stream <span style="color:#f92672">=</span> StringIO(code)
+</span></span><span style="display:flex;"><span>        tokens <span style="color:#f92672">=</span> tokenize<span style="color:#f92672">.</span>generate_tokens(stream<span style="color:#f92672">.</span>readline)
+</span></span><span style="display:flex;"><span>        larg <span style="color:#f92672">=</span> rarg <span style="color:#f92672">=</span> opcode <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> toknum, tokval, _, _, _ <span style="color:#f92672">in</span> tokens:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> toknum <span style="color:#f92672">==</span> tokenize<span style="color:#f92672">.</span>NAME:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> cls<span style="color:#f92672">.</span>is_opcode(tokval):
+</span></span><span style="display:flex;"><span>                    opcode <span style="color:#f92672">=</span> tokval
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">elif</span> larg <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>: 
+</span></span><span style="display:flex;"><span>                    larg <span style="color:#f92672">=</span> int(tokval) <span style="color:#66d9ef">if</span> tokval<span style="color:#f92672">.</span>isdigit() <span style="color:#66d9ef">else</span> tokval
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                    rarg <span style="color:#f92672">=</span> int(tokval) <span style="color:#66d9ef">if</span> tokval<span style="color:#f92672">.</span>isdigit() <span style="color:#66d9ef">else</span> tokval
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> toknum <span style="color:#f92672">==</span> tokenize<span style="color:#f92672">.</span>NUMBER:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> larg <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>: 
+</span></span><span style="display:flex;"><span>                    larg <span style="color:#f92672">=</span> int(tokval) <span style="color:#66d9ef">if</span> tokval<span style="color:#f92672">.</span>isdigit() <span style="color:#66d9ef">else</span> tokval
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                    rarg <span style="color:#f92672">=</span> int(tokval) <span style="color:#66d9ef">if</span> tokval<span style="color:#f92672">.</span>isdigit() <span style="color:#66d9ef">else</span> tokval
+</span></span><span style="display:flex;"><span>                    
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> opcode <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>            cls<span style="color:#f92672">.</span>execute_code_object(opcode, larg, rarg)
+</span></span></code></pre></div><p>I will start the explanation from the run_line method.</p>
+<p>How run_line method works</p>
+<p>We know that our program consists of lines, and each line can be executed by VM. So, from this point of view, the run_line function is the main method that executes our code. It performs the following steps:</p>
+<ul>
+<li>tokenize the input string with tokenize.generate_tokens</li>
+<li>tokenize.generate_tokens will produce the sequence of tokens from a given string, each token will be described by its type, for example numbers described as numbers, strings as names, etc. It means that each sequence of characters, or single character will be parsed and the function returns each token with its definition. We use it to split the line of code for opcode and operands. Some opcodes can have two operands, some can’t. If the token is an opcode, its value is set as an opcode variable, to be called through the opcodes dictionary. If the token is not an opcode, it becomes the left argument, next non-opcode token will become a right argument.</li>
+<li>Define opcode and its arguments</li>
+<li>Call method, linked with opcode name</li>
+</ul>
+<p>Summarizing, the run_line method runs the line of code.</p>
+<p>How run method works</p>
+<p>run is the method that stays on the top of SlapVM and becomes an entrypoint for code execution. It performs simple steps:</p>
+<ul>
+<li>Prepare VM for execution</li>
+<li>Split code by line endings and save into __code list</li>
+<li>Run the code from zero index line-by-line, after each line executes, increment __ip, while __ip value is less than __code length (if it’s equal, it means we executed all the code)</li>
+</ul>
+<p>If somewhere in the code the opcode KNOCK or BEAT occurs, it directly changes the __ip value, so the next line will be executed from that offset into __code list.</p>
+<h3 id="opcodes">Opcodes</h3>
+<p>Next, we need to define methods used to do the work that opcodes are supposed to handle. I would not add a complete listing here, you can see it on <a href="https://github.com/dmitry8912/SLAP">github</a>.</p>
+<h3 id="proof-of-work">Proof of work</h3>
+<p>We have finished a great job, but we still need to write and execute a simple program. Let it be a factorial calculator.</p>
+<pre tabindex="0"><code>SLAPPUT factorial
+PLOPIN fact_tmp factorial
+factorial_calc
+fact_tmp UNSLAP 1
+factorial MULTISLAP fact_tmp
+fact_tmp PUNCHES 1
+KNOCK factorial_calc
+SLAPSCREEN factorial
+</code></pre><p>This program asks the user for a number, copies it to a temporary variable, and starts multiplying the first value to its copy, decrementing a copy while it is more than 1. After that temporary value becomes 1, the program prints factorial value and ends.</p>
+
+
+
+        <div class="footer">
+	<a href="/cv/en/">CV</a> | <a href="https://habr.com/ru/users/Dmitry89/">Habr</a> | <a href="https://medium.com/@dmitry8912/">Medium</a> | <a href="https://github.com/dmitry8912">GitHub</a> | <a href="https://otus.ru/instructors/2236">OTUS</a> | <a href="mailto:dmitry8912@gmail.com">Email</a> | <a href="https://t.me/dmitry8912">Telegram</a>
+</div>
+
+    </div>
+  </body>
+</html>

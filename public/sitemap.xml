@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    
+        
+        <url>
+            <loc>https://dev-io.ru/</loc>
+            <lastmod>2023-09-21T11:54:22+03:00</lastmod>
+        </url>
+        
+    
+        
+        <url>
+            <loc>https://dev-io.ru/posts/</loc>
+            <lastmod>2023-09-21T11:54:22+03:00</lastmod>
+        </url>
+        
+    
+        
+        <url>
+            <loc>https://dev-io.ru/posts/0x003/</loc>
+            <lastmod>2023-09-21T11:54:22+03:00</lastmod>
+        </url>
+        
+    
+        
+        <url>
+            <loc>https://dev-io.ru/posts/0x002/</loc>
+            <lastmod>2023-09-21T11:54:19+03:00</lastmod>
+        </url>
+        
+    
+        
+        <url>
+            <loc>https://dev-io.ru/posts/0x001/</loc>
+            <lastmod>2023-09-21T11:49:47+03:00</lastmod>
+        </url>
+        
+    
+        
+        <url>
+            <loc>https://dev-io.ru/cv/my_cv/</loc>
+            <lastmod>2023-09-21T11:12:40+03:00</lastmod>
+        </url>
+        
+    
+        
+        <url>
+            <loc>https://dev-io.ru/cv/ru/</loc>
+            <lastmod>2023-09-21T11:12:40+03:00</lastmod>
+        </url>
+        
+    
+        
+        <url>
+            <loc>https://dev-io.ru/cv/en/</loc>
+            <lastmod>2023-09-21T11:12:40+03:00</lastmod>
+        </url>
+        
+    
+        
+        <url>
+            <loc>https://dev-io.ru/cv/</loc>
+            <lastmod>2023-09-21T11:12:40+03:00</lastmod>
+        </url>
+        
+    
+        
+        <url>
+            <loc>https://dev-io.ru/categories/</loc>
+        </url>
+        
+    
+        
+        <url>
+            <loc>https://dev-io.ru/tags/</loc>
+        </url>
+        
+    
+</urlset>

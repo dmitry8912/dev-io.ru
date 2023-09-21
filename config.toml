@@ -1,4 +1,4 @@
-baseURL = 'http://dev-io.ru/'
+baseURL = 'https://dev-io.ru/'
 languageCode = 'en-us'
 title = 'dev-io.ru'
 theme = "hugo-theme-console"
