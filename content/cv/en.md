@@ -16,6 +16,7 @@ Operating systems:
 * Windows
 * Linux (Ubuntu, CentOS, Fedora)
 	* bash
+
 Stack:
 * Backend
 	* Docker & K8s
