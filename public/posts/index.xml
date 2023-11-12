@@ -6,7 +6,18 @@
     <description>Recent content in Posts on dev-io.ru</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 11 Nov 2023 21:54:22 +0300</lastBuildDate><atom:link href="https://dev-io.ru/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 12 Nov 2023 11:54:22 +0300</lastBuildDate><atom:link href="https://dev-io.ru/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Решение crackme от timotei_ (assembler)</title>
+      <link>https://dev-io.ru/posts/0x005/</link>
+      <pubDate>Sun, 12 Nov 2023 11:54:22 +0300</pubDate>
+      
+      <guid>https://dev-io.ru/posts/0x005/</guid>
+      <description>Данная crackme является оконным приложением, и написана на assembler. Наша задача состоит в том, чтобы понять алгоритм генерации ключа, найти валидный серийный номер, и написать кейген.
+Для анализа и проверки гипотез нам понадобится:
+ IDA Python  Осмотр Запустив crackme мы видим одно окно, с полем для ввода серийного номера, и кнопкой, почему-то называющейся &amp;ldquo;Generate&amp;rdquo;, и очевидно отвечающей за проверку введенного серийного номера. Что бы я ни вводил в поле - статус по прежнему оставался &amp;ldquo;Unregistered&amp;rdquo;.</description>
+    </item>
+    
     <item>
       <title>Решение .NET crackme от KilLo</title>
       <link>https://dev-io.ru/posts/0x004/</link>
