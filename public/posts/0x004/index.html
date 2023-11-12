@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>dev-io.ru/posts/0x004/</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <meta name="googlebot" content="index,follow,snippet,archive">
+    <link rel="stylesheet" href="https://dev-io.ru/hugo-theme-console/css/terminal-0.7.2.min.css">
+    <link rel="stylesheet" href="https://dev-io.ru/hugo-theme-console/css/animate-4.1.1.min.css">
+    <link rel="stylesheet" href="https://dev-io.ru/hugo-theme-console/css/console.css">
+    
+      <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+       <meta property="og:title" content="Решение .NET crackme от KilLo" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://dev-io.ru/posts/0x004/" /><meta property="article:published_time" content="2023-11-11T21:54:22+03:00" />
+
+
+
+<meta name="twitter:title" content="Решение .NET crackme от KilLo"/>
+<meta name="twitter:description" content="Решение crackme это (время от времени) достаточно увлекательное занятие, позволяющее взглянуть на некоторые вещи под непривычным углом. В этой статье я расскажу о том, как можно патчить скомпилированные .NET-приложения не прибегая к перекомпиляции.
+Автор crackme говорит, что ключ (понимание алгоритма генерации которого обычно, вместе с написанием генератора валдиных ключей, и является решением) случайным образом генерируется при старте приложения, и наша цель заключается в том, чтобы получить пропатченую версию, принимающую любой ключ."/>
+
+</head>
+<body class="terminal">
+    <div class="container">
+        <div class="terminal-nav">
+          <header class="terminal-logo">
+            <div class="logo terminal-prompt">
+              
+              
+              <a href="https://dev-io.ru/" class="no-style ">dev-io.ru</a>:~# 
+              <a href='https://dev-io.ru/posts'>posts</a>/<a href='https://dev-io.ru/posts/0x004'>0x004</a>/</div></header>
+          <nav class="terminal-menu">
+            <ul vocab="https://schema.org/" typeof="BreadcrumbList">
+                
+            </ul>
+          </nav>
+        </div>
+    </div>
+
+    <div class="container " >
+        
+<h1>Решение .NET crackme от KilLo</h1>
+
+Nov. 11, 2023
+
+
+<br/><br/>
+<p>Решение crackme это (время от времени) достаточно увлекательное занятие, позволяющее взглянуть на некоторые вещи под непривычным углом. В этой статье я расскажу о том, как можно патчить скомпилированные .NET-приложения не прибегая к перекомпиляции.</p>
+<p>Автор <a href="https://crackmes.one/crackme/641d471733c5d447bc761c04">crackme</a> говорит, что ключ (понимание алгоритма генерации которого обычно, вместе с написанием генератора валдиных ключей, и является решением) случайным образом генерируется при старте приложения, и наша цель заключается в том, чтобы получить пропатченую версию, принимающую любой ключ.</p>
+<pre tabindex="0"><code>Welcome to KilLo&#39;s CrackMe!
+
+The key is always randomly generated on startup, you can hold shift to dump the key to a TXT file, but that&#39;s kind of cheating...
+
+This is a challenge program made for you to crack.
+The goal is to make a &#34;Cracked&#34; version of this program that always allows access no matter the license key, or you can make a keygen if you know how.
+
+Created by KilLo
+youtube.com/KilLo445
+</code></pre><h1 id="начинаем-исследование">Начинаем исследование</h1>
+<p><img src="/0x004/1.png" alt="Crackme main window">
+Приложение состоит из единственного окна, в котором нас просят ввести имя пользователя и лицензионный ключ. При вводе данных (конечно же невалидных) мы получаем сообщение &ldquo;Invalid license key&rdquo;.
+<img src="/0x004/2.png" alt="Invalid license key">
+Загрузим образец в dotPeek и посмотрим на внутренности.
+<img src="/0x004/3.png" alt="dotPeek">
+В Assembly explorer находим класс MainWindows, и по именам методов понимаем, что кнопка, отвечающая за проверку корректности введенного ключа называется <strong>CheckButton</strong>, а обработчик нажатия на кнопку - <strong>CheckButton_Click</strong>. Код этого метода приведен ниже.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>MainWindow.InputUsername = <span style="color:#66d9ef">this</span>.UsernameInput.Text;
+</span></span><span style="display:flex;"><span>MainWindow.InputKey = <span style="color:#66d9ef">this</span>.KeyInput.Text;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (MainWindow.InputUsername == <span style="color:#66d9ef">null</span> || MainWindow.InputUsername == <span style="color:#e6db74">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> num1 = (<span style="color:#66d9ef">int</span>) MessageBox.Show(<span style="color:#e6db74">&#34;Please enter a username.&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>, MessageBoxButton.OK, MessageBoxImage.Hand);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (MainWindow.InputKey == <span style="color:#66d9ef">null</span> || MainWindow.InputKey == <span style="color:#e6db74">&#34;&#34;</span>)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> num2 = (<span style="color:#66d9ef">int</span>) MessageBox.Show(<span style="color:#e6db74">&#34;Please enter a license key.&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>, MessageBoxButton.OK, MessageBoxImage.Hand);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (MainWindow.InputUsername != <span style="color:#66d9ef">null</span>)
+</span></span><span style="display:flex;"><span>      MainWindow.InputKey = Convert.ToBase64String(Encoding.UTF8.GetBytes(MainWindow.InputKey));
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">string</span>.Equals(MainWindow.LicenseKey, MainWindow.InputKey))
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">this</span>.CorrectKey();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">this</span>.IncorrectKey();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Вся логика проверки корректности ключа находится в последнем else-блоке. По коду мы видим, что:</p>
+<ol>
+<li>Имя пользователя ввести необходимо, но оно не участвует в процедурах проверки</li>
+<li>У класса MainWindow есть поле <code>LicenseKey</code>, с которым сравнивается наш введенный ключ <code>InputKey</code>.</li>
+</ol>
+<p>Посмотрим на то, как генерируется <code>LicenseKey</code>. В конструкторе класса присутствуют следующие строки:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span>MainWindow.LicenseKey = MainWindow.RandomString(<span style="color:#ae81ff">5</span>) + <span style="color:#e6db74">&#34;-&#34;</span> + MainWindow.RandomString(<span style="color:#ae81ff">5</span>) + <span style="color:#e6db74">&#34;-&#34;</span> + MainWindow.RandomString(<span style="color:#ae81ff">5</span>) + <span style="color:#e6db74">&#34;-&#34;</span> + MainWindow.RandomString(<span style="color:#ae81ff">5</span>) + <span style="color:#e6db74">&#34;-&#34;</span> + MainWindow.RandomString(<span style="color:#ae81ff">5</span>);
+</span></span><span style="display:flex;"><span>MainWindow.LicenseKey = Convert.ToBase64String(Encoding.UTF8.GetBytes(MainWindow.LicenseKey));
+</span></span></code></pre></div><p>То есть, ключ составляется из пяти результатов работы метода <code>RandomString</code>, по 5 символов в блоке, и имеет вид <code>AAAAA-AAAAA-AAAAA-AAAAA-AAAAA</code>. Метод <code>RandomString</code> имеет следующий вид:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-csharp" data-lang="csharp"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">string</span> RandomString(<span style="color:#66d9ef">int</span> length) =&gt; <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">string</span>(Enumerable.Repeat&lt;<span style="color:#66d9ef">string</span>&gt;(<span style="color:#e6db74">&#34;ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&#34;</span>, length).Select&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">char</span>&gt;((Func&lt;<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">char</span>&gt;) (s =&gt; s[MainWindow.random.Next(s.Length)])).ToArray&lt;<span style="color:#66d9ef">char</span>&gt;());
+</span></span></code></pre></div><p>Из приведенного листинга можно сделать следующие выводы:</p>
+<ol>
+<li>Для генерации ключа используется фиксированный алфавит (<code>A-Z 0-9</code>)</li>
+<li>&ldquo;Угадать&rdquo; ключ теоретически можно, но нужно каким-то образом повлиять на генератор случайных чисел.</li>
+<li>Из п.1 следует, что написать keygen к данному crackme - задача весьма нетривиальная.</li>
+</ol>
+<p>Какие варианты решения остаются?</p>
+<h1 id="инвазивные-методы-лечения">Инвазивные методы &ldquo;лечения&rdquo;</h1>
+<p>Инвазивные (предполагающие хирургическое вмешательство) методы решения данной crackme следующие:</p>
+<ol>
+<li>Модификация строки <code>if (string.Equals(MainWindow.LicenseKey, MainWindow.InputKey))</code> в методе проверки ключа таким образом, чтобы проверка для невалидного ключа (вероятность ввода которого намного превышает вероятность угадать валидный ключ) всегда давала true.</li>
+<li>Модификация алфавита таким образом, чтобы ключ состоял из повторений одного и того же символа.</li>
+<li>Передача в конструктор экземпляра класса Random некоторого seed, которое бы зафиксировало ГСЧ.</li>
+</ol>
+<p>Я проверил первые два способа, и расскажу о них ниже.</p>
+<h1 id="1-byte-patch">1-byte patch</h1>
+<p>Это самый быстрый метод, в котором мы немного изменим инструкции IL-кода таким образом, чтобы в условии перед <code>string.Equals</code> появилось отрицание, или иначе говоря, чтобы любой невалидный ключ приводил к выполнению метода <code>CorrectKey()</code>.</p>
+<p>Для этого нам понадобится:</p>
+<ol>
+<li>IL Disassembler</li>
+<li>CFF Explorer</li>
+</ol>
+<h2 id="il-to-bytes">IL to bytes</h2>
+<p>Сначала нам нужно понять, какие фактические байты, и по какому смещению в исполняемом файле отвечают за инструкции ветвления. Для этого воспользуемя утилитой ILDasm из поставки VisualStudio. Загружаем наш образец в ILDasm и выбираем Файл - Дамп. В открывшемся окне выбираем опции (под опцией &ldquo;Вывести IL-код&rdquo;):</p>
+<ol>
+<li>Фактические байты</li>
+<li>Номера строк
+<img src="/0x004/4.png" alt="ildasm">
+Нажимаем &ldquo;ОК&rdquo;, вводим имя результирующего файла, и открываем его любым текстовым редактором. Далее простым поиском находим метод <code>CheckButton_Click</code>. Он будет выглядеть так:</li>
+</ol>
+<pre tabindex="0"><code>.method private hidebysig instance void 
+          CheckButton_Click(object sender,
+                            class [PresentationCore]System.Windows.RoutedEventArgs e) cil managed
+  // SIG: 20 02 01 1C 12 55
+  {
+    // Метод начинается по RVA 0x2498
+    // Размер кода:       185 (0xb9)
+    .maxstack  4
+    .locals init (string V_0)
+    IL_0000:  /* 02   |                  */ ldarg.0
+    IL_0001:  /* 7B   | (04)000012       */ ldfld      class [PresentationFramework]System.Windows.Controls.TextBox KilLo_s_CrackMe.MainWindow::UsernameInput
+    IL_0006:  /* 6F   | (0A)00003D       */ callvirt   instance string [PresentationFramework]System.Windows.Controls.TextBox::get_Text()
+    IL_000b:  /* 80   | (04)00000E       */ stsfld     string KilLo_s_CrackMe.MainWindow::InputUsername
+    IL_0010:  /* 02   |                  */ ldarg.0
+    IL_0011:  /* 7B   | (04)000013       */ ldfld      class [PresentationFramework]System.Windows.Controls.TextBox KilLo_s_CrackMe.MainWindow::KeyInput
+    IL_0016:  /* 6F   | (0A)00003D       */ callvirt   instance string [PresentationFramework]System.Windows.Controls.TextBox::get_Text()
+    IL_001b:  /* 80   | (04)00000D       */ stsfld     string KilLo_s_CrackMe.MainWindow::InputKey
+    IL_0020:  /* 7E   | (04)00000E       */ ldsfld     string KilLo_s_CrackMe.MainWindow::InputUsername
+    IL_0025:  /* 2C   | 11               */ brfalse.s  IL_0038
+
+    IL_0027:  /* 7E   | (04)00000E       */ ldsfld     string KilLo_s_CrackMe.MainWindow::InputUsername
+    IL_002c:  /* 72   | (70)0003C0       */ ldstr      &#34;&#34;
+    IL_0031:  /* 28   | (0A)00003E       */ call       bool [mscorlib]System.String::op_Equality(string,
+                                                                                                 string)
+    IL_0036:  /* 2C   | 14               */ brfalse.s  IL_004c
+
+    IL_0038:  /* 72   | (70)0003EC       */ ldstr      &#34;Please enter a username.&#34;
+    IL_003d:  /* 72   | (70)0003C0       */ ldstr      &#34;&#34;
+    IL_0042:  /* 16   |                  */ ldc.i4.0
+    IL_0043:  /* 1F   | 10               */ ldc.i4.s   16
+    IL_0045:  /* 28   | (0A)000035       */ call       valuetype [PresentationFramework]System.Windows.MessageBoxResult [PresentationFramework]System.Windows.MessageBox::Show(string,
+                                                                                                                                                                               string,
+                                                                                                                                                                               valuetype [PresentationFramework]System.Windows.MessageBoxButton,
+                                                                                                                                                                               valuetype [PresentationFramework]System.Windows.MessageBoxImage)
+    IL_004a:  /* 26   |                  */ pop
+    IL_004b:  /* 2A   |                  */ ret
+
+    IL_004c:  /* 7E   | (04)00000D       */ ldsfld     string KilLo_s_CrackMe.MainWindow::InputKey
+    IL_0051:  /* 2C   | 11               */ brfalse.s  IL_0064
+
+    IL_0053:  /* 7E   | (04)00000D       */ ldsfld     string KilLo_s_CrackMe.MainWindow::InputKey
+    IL_0058:  /* 72   | (70)0003C0       */ ldstr      &#34;&#34;
+    IL_005d:  /* 28   | (0A)00003E       */ call       bool [mscorlib]System.String::op_Equality(string,
+                                                                                                 string)
+    IL_0062:  /* 2C   | 14               */ brfalse.s  IL_0078
+
+    IL_0064:  /* 72   | (70)00041E       */ ldstr      &#34;Please enter a license key.&#34;
+    IL_0069:  /* 72   | (70)0003C0       */ ldstr      &#34;&#34;
+    IL_006e:  /* 16   |                  */ ldc.i4.0
+    IL_006f:  /* 1F   | 10               */ ldc.i4.s   16
+    IL_0071:  /* 28   | (0A)000035       */ call       valuetype [PresentationFramework]System.Windows.MessageBoxResult [PresentationFramework]System.Windows.MessageBox::Show(string,
+                                                                                                                                                                               string,
+                                                                                                                                                                               valuetype [PresentationFramework]System.Windows.MessageBoxButton,
+                                                                                                                                                                               valuetype [PresentationFramework]System.Windows.MessageBoxImage)
+    IL_0076:  /* 26   |                  */ pop
+    IL_0077:  /* 2A   |                  */ ret
+
+    IL_0078:  /* 7E   | (04)00000E       */ ldsfld     string KilLo_s_CrackMe.MainWindow::InputUsername
+    IL_007d:  /* 2C   | 1B               */ brfalse.s  IL_009a
+
+    IL_007f:  /* 28   | (0A)000016       */ call       class [mscorlib]System.Text.Encoding [mscorlib]System.Text.Encoding::get_UTF8()
+    IL_0084:  /* 7E   | (04)00000D       */ ldsfld     string KilLo_s_CrackMe.MainWindow::InputKey
+    IL_0089:  /* 6F   | (0A)000032       */ callvirt   instance uint8[] [mscorlib]System.Text.Encoding::GetBytes(string)
+    IL_008e:  /* 28   | (0A)000033       */ call       string [mscorlib]System.Convert::ToBase64String(uint8[])
+    IL_0093:  /* 0A   |                  */ stloc.0
+    IL_0094:  /* 06   |                  */ ldloc.0
+    IL_0095:  /* 80   | (04)00000D       */ stsfld     string KilLo_s_CrackMe.MainWindow::InputKey
+    IL_009a:  /* 7E   | (04)00000A       */ ldsfld     string KilLo_s_CrackMe.MainWindow::LicenseKey
+    IL_009f:  /* 7E   | (04)00000D       */ ldsfld     string KilLo_s_CrackMe.MainWindow::InputKey
+    IL_00a4:  /* 28   | (0A)00001B       */ call       bool [mscorlib]System.String::Equals(string,
+                                                                                            string)
+    IL_00a9:  /* 2C   | 07               */ brfalse.s  IL_00b2
+
+    IL_00ab:  /* 02   |                  */ ldarg.0
+    IL_00ac:  /* 28   | (06)000011       */ call       instance void KilLo_s_CrackMe.MainWindow::CorrectKey()
+    IL_00b1:  /* 2A   |                  */ ret
+
+    IL_00b2:  /* 02   |                  */ ldarg.0
+    IL_00b3:  /* 28   | (06)000012       */ call       instance void KilLo_s_CrackMe.MainWindow::IncorrectKey()
+    IL_00b8:  /* 2A   |                  */ ret
+  } // end of method MainWindow::CheckButton_Click
+</code></pre><p>Здесь нас интересуют следующие строки, отвечающие на if-else ветвление:</p>
+<pre tabindex="0"><code>IL_00a4:  /* 28   | (0A)00001B       */ call       bool [mscorlib]System.String::Equals(string,
+                                                                                            string)
+IL_00a9:  /* 2C   | 07               */ brfalse.s  IL_00b2
+</code></pre><p>Инструкция <code>call</code> вызывает метод <code>string.Equals</code>, а <code>brfalse.s</code>, в случае если результат логической операции равен false перекидывает нас на 7 байт исполняемого кода вперед (на <code>IncorrectKey</code>).
+В MSDN указано, что для инструкции <code>brfalse.s</code> есть противоположная инструкция <a href="https://learn.microsoft.com/ru-ru/dotnet/api/system.reflection.emit.opcodes.brtrue_s?view=net-7.0">brtrue.s</a> с опкодом <code>2D</code>. То есть фактически для изменения поведения нам нужно найти в exe-файле байт <code>2C</code> и поменять его на <code>2D</code>.</p>
+<h2 id="cff-explorer">CFF Explorer</h2>
+<p>В поиске и замене нам поможет утилита под названием CFF Explorer. Запустим утилиту, и загрузим в нее наш файл.
+<img src="/0x004/5.png" alt="CFF explorer">
+Далее, нам нужно найти начало метода <code>CheckButton_Click</code> и затем от него найти нужный байт.
+<img src="/0x004/6.png" alt="CFF Explorer">
+Для поиска начала метода вернемся к листингу из ildasm. В самом заголовке метода указывается, что <code>Метод начинается по RVA 0x2498</code>. RVA (relative virtual address) - это относительный виртуальный адрес, который используется в операционных системах Windows для адресации участков памяти. В CFF Explorer мы переходим в Address converter (слева) и в поле RVA вводим значение <code>2498</code>, после чего нас перекинет на начало байт-кода метода.
+<img src="/0x004/7.png" alt="CFF Explorer">
+Далее, ищем байты из листинга:</p>
+<pre tabindex="0"><code>IL_00a9:  /* 2C   | 07               */ brfalse.s  IL_00b2
+IL_00ab:  /* 02   |                  */ ldarg.0
+IL_00ac:  /* 28   | (06)000011       */ call       instance void KilLo_s_CrackMe.MainWindow::CorrectKey()
+</code></pre><p>Нас интересует <code>2C 07 02 28</code>. Они расположены по смещению 740. Теперь, остается сделать одно - исправить <code>2C</code> на <code>2D</code>. В этом же hex-редакторе исправляем байт, введя букву <code>d</code> с клавиатуры, сохраняем файл, запускаем, вводим ключ, и видим, что все прошло успешно.
+<img src="/0x004/8.png" alt="patch ok">
+<img src="/0x004/9.png" alt="patch ok"></p>
+<h2 id="feel-like-a-bolshevik">Feel like a Bolshevik</h2>
+<p>Хотите почуствовать себя большевиком, сократив алфавит? Тогда поехали! Здесь нам снова потребуется CFF Explorer, но на этот раз мы, загрузив файл, пойдем в меню <code>.NET Directory - Meta Data Streams - US</code>. Здесь уже глазами находим комбинацию <code>ABCDE...</code> и правим тут же не отходя от кассы. После этого проверяем результат. Видим, что все прошло успешно, наши рандомно набранные буквы <code>A</code> очень хорошо совпали с <code>A</code>, введенными с клавиатуры.
+<img src="/0x004/10.png" alt="string fix">
+<img src="/0x004/11.png" alt="patch ok">
+<img src="/0x004/12.png" alt="patch ok"></p>
+<h1 id="выводы">Выводы</h1>
+<p>Способы, использованные мной для решения этой задачи, достаточно примитивны, гораздо более интересным мне представляется вариант с фиксацией ГСЧ или подменой тела метода <code>RandomString</code>, но, об этом в следующий раз.</p>
+
+
+
+        <div class="footer">
+	<a href="/cv/en/">CV</a> | <a href="https://habr.com/ru/users/Dmitry89/">Habr</a> | <a href="https://medium.com/@dmitry8912/">Medium</a> | <a href="https://github.com/dmitry8912">GitHub</a> | <a href="https://otus.ru/instructors/2236">OTUS</a> | <a href="mailto:dmitry8912@gmail.com">Email</a> | <a href="https://t.me/dmitry8912">Telegram</a> | <a href="/posts">Archive</a>
+</div>
+
+    </div>
+  </body>
+</html>

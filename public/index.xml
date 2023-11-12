@@ -6,7 +6,17 @@
     <description>Recent content on dev-io.ru</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 21 Sep 2023 11:54:22 +0300</lastBuildDate><atom:link href="https://dev-io.ru/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 11 Nov 2023 21:54:22 +0300</lastBuildDate><atom:link href="https://dev-io.ru/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Решение .NET crackme от KilLo</title>
+      <link>https://dev-io.ru/posts/0x004/</link>
+      <pubDate>Sat, 11 Nov 2023 21:54:22 +0300</pubDate>
+      
+      <guid>https://dev-io.ru/posts/0x004/</guid>
+      <description>Решение crackme это (время от времени) достаточно увлекательное занятие, позволяющее взглянуть на некоторые вещи под непривычным углом. В этой статье я расскажу о том, как можно патчить скомпилированные .NET-приложения не прибегая к перекомпиляции.
+Автор crackme говорит, что ключ (понимание алгоритма генерации которого обычно, вместе с написанием генератора валдиных ключей, и является решением) случайным образом генерируется при старте приложения, и наша цель заключается в том, чтобы получить пропатченую версию, принимающую любой ключ.</description>
+    </item>
+    
     <item>
       <title>SLAP - Programming language inspired by physical violence</title>
       <link>https://dev-io.ru/posts/0x003/</link>
