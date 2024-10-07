@@ -2,41 +2,32 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Cvs on dev-io.ru</title>
-    <link>https://dev-io.ru/cv/</link>
+    <link>http://localhost:1313/cv/</link>
     <description>Recent content in Cvs on dev-io.ru</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 21 Sep 2023 11:12:40 +0300</lastBuildDate><atom:link href="https://dev-io.ru/cv/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 21 Sep 2023 11:12:40 +0300</lastBuildDate>
+    <atom:link href="http://localhost:1313/cv/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Cv</title>
-      <link>https://dev-io.ru/cv/my_cv/</link>
+      <link>http://localhost:1313/cv/my_cv/</link>
       <pubDate>Thu, 21 Sep 2023 11:12:40 +0300</pubDate>
-      
-      <guid>https://dev-io.ru/cv/my_cv/</guid>
+      <guid>http://localhost:1313/cv/my_cv/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>Cv</title>
-      <link>https://dev-io.ru/cv/ru/</link>
+      <link>http://localhost:1313/cv/ru/</link>
       <pubDate>Thu, 21 Sep 2023 11:12:40 +0300</pubDate>
-      
-      <guid>https://dev-io.ru/cv/ru/</guid>
+      <guid>http://localhost:1313/cv/ru/</guid>
       <description></description>
     </item>
-    
     <item>
       <title>CV (en)</title>
-      <link>https://dev-io.ru/cv/en/</link>
+      <link>http://localhost:1313/cv/en/</link>
       <pubDate>Thu, 21 Sep 2023 11:12:40 +0300</pubDate>
-      
-      <guid>https://dev-io.ru/cv/en/</guid>
-      <description>Personal Information &amp;amp; Overview Name: Pankrashov Dmitry
-About me:
- 8+ years of experience working on real-world software, with disturbed teams Have an experience in software &amp;amp; hardware engineering (network engineering, higload) Intrested in low-level system programming  Stack &amp;amp; skills Operating systems:
- Windows Linux (Ubuntu, CentOS, Fedora)  bash    Stack:
- Backend  Docker &amp;amp; K8s Databases  Microsoft SQL Server PostgreSQL MySQL Redis   Messqge queues  RabbitMQ Apache Kafka   PHP (5,7,8)  Pure PHP Laravel   .</description>
+      <guid>http://localhost:1313/cv/en/</guid>
+      <description>&lt;h2 id=&#34;personal-information--overview&#34;&gt;Personal Information &amp;amp; Overview&lt;/h2&gt;&#xA;&lt;p&gt;Name: Pankrashov Dmitry&lt;/p&gt;&#xA;&lt;p&gt;About me:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;8+ years of experience working on real-world software, with disturbed teams&lt;/li&gt;&#xA;&lt;li&gt;Have an experience in software &amp;amp; hardware engineering (network engineering, higload)&lt;/li&gt;&#xA;&lt;li&gt;Intrested in low-level system programming&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;stack--skills&#34;&gt;Stack &amp;amp; skills&lt;/h2&gt;&#xA;&lt;p&gt;Operating systems:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Windows&lt;/li&gt;&#xA;&lt;li&gt;Linux (Ubuntu, CentOS, Fedora)&#xA;&lt;ul&gt;&#xA;&lt;li&gt;bash&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Stack:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Backend&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Docker &amp;amp; K8s&lt;/li&gt;&#xA;&lt;li&gt;Databases&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Microsoft SQL Server&lt;/li&gt;&#xA;&lt;li&gt;PostgreSQL&lt;/li&gt;&#xA;&lt;li&gt;MySQL&lt;/li&gt;&#xA;&lt;li&gt;Redis&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;Messqge queues&#xA;&lt;ul&gt;&#xA;&lt;li&gt;RabbitMQ&lt;/li&gt;&#xA;&lt;li&gt;Apache Kafka&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;PHP (5,7,8)&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Pure PHP&lt;/li&gt;&#xA;&lt;li&gt;Laravel&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;.NET.NET Core (C#)&#xA;&lt;ul&gt;&#xA;&lt;li&gt;ASP.NET MVC&lt;/li&gt;&#xA;&lt;li&gt;EntityFramework&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;Python 3 (3.5+)&#xA;&lt;ul&gt;&#xA;&lt;li&gt;SQLAlchemy&lt;/li&gt;&#xA;&lt;li&gt;Alembic&lt;/li&gt;&#xA;&lt;li&gt;Asyncio&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;Frontend&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Vue.js (Quasar framework)&lt;/li&gt;&#xA;&lt;li&gt;jQuery&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;experience--projects&#34;&gt;Experience &amp;amp; Projects&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Backend Python\C# developer at Sber AR\VR Lab&lt;/li&gt;&#xA;&lt;li&gt;Experienced in building microservice architecrue&lt;/li&gt;&#xA;&lt;li&gt;Have an experience in backend profiling, searching for performance bottlenecks (with Prometheus, Jaeger)&lt;/li&gt;&#xA;&lt;li&gt;You can see other projects in my &lt;a href=&#34;https://github.com/dmitry8912&#34;&gt;GitHub&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;other&#34;&gt;Other&lt;/h2&gt;&#xA;&lt;p&gt;Teacher of the following courses at OTUS online education:&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>

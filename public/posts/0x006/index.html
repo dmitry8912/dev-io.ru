@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>dev-io.ru/posts/0x006/</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <meta name="googlebot" content="index,follow,snippet,archive">
+    <link rel="stylesheet" href="http://localhost:1313/hugo-theme-console/css/terminal-0.7.2.min.css">
+    <link rel="stylesheet" href="http://localhost:1313/hugo-theme-console/css/animate-4.1.1.min.css">
+    <link rel="stylesheet" href="http://localhost:1313/hugo-theme-console/css/console.css">
+    
+      <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+       <meta property="og:title" content="fyne - GUI для golang" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/posts/0x006/" /><meta property="article:published_time" content="2024-10-06T20:34:11+03:00" />
+
+
+
+<meta name="twitter:title" content="fyne - GUI для golang"/>
+<meta name="twitter:description" content="Зачем вообще писать UI, если есть web? В некоторых случаях да, проще сделать web-приложение, тем более что фреймворки, типа Quasar во-первых имеют встроенную библиотеку ui-компонент, а во-вторых умеют собираться под разные платформы (в том числе и iOS\Android), и быть PWA, устанавливаемой на ПК\смартфон.
+Но в некоторых случаях нужно либо придать более дружелюбный пользователю интерфейс к изначально консольной утилите, либо же действительно сделать утилиту для локального запуска с поддержкой GUI.
+GUI в Go
+Что доступно в Go?"/>
+
+</head>
+<body class="terminal">
+    <div class="container">
+        <div class="terminal-nav">
+          <header class="terminal-logo">
+            <div class="logo terminal-prompt">
+              
+              
+              <a href="http://localhost:1313/" class="no-style ">dev-io.ru</a>:~# 
+              <a href='http://localhost:1313/posts'>posts</a>/<a href='http://localhost:1313/posts/0x006'>0x006</a>/</div></header>
+          <nav class="terminal-menu">
+            <ul vocab="https://schema.org/" typeof="BreadcrumbList">
+                
+            </ul>
+          </nav>
+        </div>
+    </div>
+
+    <div class="container " >
+        
+<h1>fyne - GUI для golang</h1>
+
+Oct. 6, 2024
+
+
+<br/><br/>
+<p>Зачем вообще писать UI, если есть web? В некоторых случаях да, проще сделать web-приложение, тем более что фреймворки, типа <a href="https://quasar.dev/">Quasar</a> во-первых имеют встроенную библиотеку ui-компонент, а во-вторых умеют собираться под разные платформы (в том числе и iOS\Android), и быть PWA, устанавливаемой на ПК\смартфон.</p>
+<p>Но в некоторых случаях нужно либо придать более дружелюбный пользователю интерфейс к изначально консольной утилите, либо же действительно сделать утилиту для локального запуска с поддержкой GUI.</p>
+<h1 id="gui-в-go">GUI в Go</h1>
+<p>Что доступно в Go?</p>
+<p>Во-первых это <a href="https://fyne.io/">fyne</a>. Из плюсов: кросс-компиляция, собственный рендер, независимый от платформ. Из минусов: на Windows ставить и поднимать несколько затратно. Требуется gcc с mingw. Шагов по установке немного, но компиляция готового приложения (и его отладка) - небыстрое по времени ожидания готовности сборки занятие.</p>
+<p>Во-вторых - <a href="https://wails.io/">wails</a>. Немного посмотрев на документацию становится понятно, что это эдакий локальный веб-сервер и браузер, показывающий в окне отрендереное web-приложение. Из коробки доступны шаблоны, например с <a href="https://wails.io/docs/guides/routing/#react">react</a> и <a href="https://wails.io/docs/guides/routing/#vue">vue.js</a>. Обращение к функциям, напсанным на go осуществляется через специальный объект <strong>window.runtime</strong>.</p>
+<p>Я попробовал fyne, и расскажу о том, как его правильно готовить.</p>
+<h1 id="установка">Установка</h1>
+<p>Для Windows нужно пройти все этапы установки, описанные <a href="https://docs.fyne.io/started/">тут</a>. Без этого просто не заработает. Обязательно проверьте утилитой <a href="https://geoffrey-artefacts.fynelabs.com/github/andydotxyz/fyne-io/setup/latest/">Fyne setup</a> состояние установки. Так как я работаю в Goland, то go sdk не виден в PATH системы. Пришлось его туда внести. Только после этого демо-примеры начали хотя бы как-то собираться.</p>
+<h1 id="приложение">Приложение</h1>
+<p><img src="/0x006/tool.png" alt="fyne application"></p>
+<p>Мне нужно было сделать небольшую хелпер-утилиту для нагрузочного тестирования сервиса. Собственно вся ее суть сводилась к отправке в очередь некоторого количества сообщений, имитируя нагрузку.</p>
+<p>Поэтому я разбил приложение на пару файлов - отдельно ui, отдельно логика.</p>
+<p>Что плохо в fyne - все пишется кодом. Если надо создать навороченное окно - придется писать много. В моем случае нужно было всего пару-тройку полей, прогресс бар, и кнопку для запуска.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fyne.io/fyne/v2&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fyne.io/fyne/v2/app&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fyne.io/fyne/v2/container&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fyne.io/fyne/v2/layout&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fyne.io/fyne/v2/widget&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;strconv&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Функиця для показа сообщения об ошибке.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Что странно - App (инстанс приложения) передается не через указатель, а по значению. С указателем не заработало.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">showError</span>(<span style="color:#a6e22e">appInstance</span> <span style="color:#a6e22e">fyne</span>.<span style="color:#a6e22e">App</span>, <span style="color:#66d9ef">error</span> <span style="color:#66d9ef">string</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Для любого окна нужно создать его инстанс через инстанс приложения
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">window</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">appInstance</span>.<span style="color:#a6e22e">NewWindow</span>(<span style="color:#e6db74">&#34;Error!&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Все элементы UI обычно лежат в widget и создаются в коде
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">errorLabel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">NewLabel</span>(<span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Для их размещения на форме они добавляются в контейнеры
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">window</span>.<span style="color:#a6e22e">SetContent</span>(<span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">NewVBox</span>(<span style="color:#a6e22e">errorLabel</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Окно поддерживает ресайз
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">window</span>.<span style="color:#a6e22e">Resize</span>(<span style="color:#a6e22e">fyne</span>.<span style="color:#a6e22e">NewSize</span>(<span style="color:#ae81ff">200</span>, <span style="color:#ae81ff">70</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Для главного окна вызывается ShowAndRun(), а в случае посторонних окон - просто Show()
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">window</span>.<span style="color:#a6e22e">Show</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">MainWindow</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// в main будет вызываться только эта функция, в ней создаем инстанс приложения
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">appInstance</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">app</span>.<span style="color:#a6e22e">New</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Задаем title окна
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">mainWindow</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">appInstance</span>.<span style="color:#a6e22e">NewWindow</span>(<span style="color:#e6db74">&#34;Token usage load test&#34;</span>)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Далее создаем группы контролов
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#75715e">// NewLabel - для надписей
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#75715e">// NewEntry - для полей ввода
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">amqpDsnLabel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">NewLabel</span>(<span style="color:#e6db74">&#34;AMQP DSN&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">amqpDsnInput</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">NewEntry</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">amqpDsnInput</span>.<span style="color:#a6e22e">SetPlaceHolder</span>(<span style="color:#e6db74">&#34;AMQP DSN&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">amqpDsnInput</span>.<span style="color:#a6e22e">SetText</span>(<span style="color:#e6db74">&#34;amqp://lk:lk@127.0.0.1:5672/lk&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Label и Entry добавляем в контейнер-таблицу из двух ячеек
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">amqpDsnOptions</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">NewGridLayout</span>(<span style="color:#ae81ff">2</span>), <span style="color:#a6e22e">amqpDsnLabel</span>, <span style="color:#a6e22e">amqpDsnInput</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tokenServiceQueueNameLabel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">NewLabel</span>(<span style="color:#e6db74">&#34;Queue name&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tokenServiceQueueName</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">NewEntry</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tokenServiceQueueName</span>.<span style="color:#a6e22e">SetPlaceHolder</span>(<span style="color:#e6db74">&#34;Queue name&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tokenServiceQueueName</span>.<span style="color:#a6e22e">SetText</span>(<span style="color:#e6db74">&#34;requests_token_usage&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tokenServiceQueueOptions</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">NewGridLayout</span>(<span style="color:#ae81ff">2</span>), <span style="color:#a6e22e">tokenServiceQueueNameLabel</span>, <span style="color:#a6e22e">tokenServiceQueueName</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tokenInputLabel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">NewLabel</span>(<span style="color:#e6db74">&#34;Token&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tokenInput</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">NewEntry</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tokenInput</span>.<span style="color:#a6e22e">SetPlaceHolder</span>(<span style="color:#e6db74">&#34;Token&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tokenInput</span>.<span style="color:#a6e22e">SetText</span>(<span style="color:#e6db74">&#34;ecc50db8-032f-4781-a429-bef2076466f4&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">tokenOptions</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">NewGridLayout</span>(<span style="color:#ae81ff">2</span>), <span style="color:#a6e22e">tokenInputLabel</span>, <span style="color:#a6e22e">tokenInput</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">workersLabel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">NewLabel</span>(<span style="color:#e6db74">&#34;Workers count&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">workersCount</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">NewEntry</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">workersCount</span>.<span style="color:#a6e22e">SetPlaceHolder</span>(<span style="color:#e6db74">&#34;Workers&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">workersCount</span>.<span style="color:#a6e22e">SetText</span>(<span style="color:#e6db74">&#34;1&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">workerCountOptions</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">NewGridLayout</span>(<span style="color:#ae81ff">2</span>), <span style="color:#a6e22e">workersLabel</span>, <span style="color:#a6e22e">workersCount</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">countMessagesPerWorkerLabel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">NewLabel</span>(<span style="color:#e6db74">&#34;Count per worker&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">countMessagesPerWorker</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">NewEntry</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">countMessagesPerWorker</span>.<span style="color:#a6e22e">SetPlaceHolder</span>(<span style="color:#e6db74">&#34;Count per worker&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">countMessagesPerWorker</span>.<span style="color:#a6e22e">SetText</span>(<span style="color:#e6db74">&#34;1&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">countMessagesPerWorkerOptions</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">NewGridLayout</span>(<span style="color:#ae81ff">2</span>), <span style="color:#a6e22e">countMessagesPerWorkerLabel</span>, <span style="color:#a6e22e">countMessagesPerWorker</span>)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Также понадобится прогресс бар для отслеживания прогресса
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">statusLabel</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">NewLabel</span>(<span style="color:#e6db74">&#34;Progress&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">progress</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">NewProgressBar</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">progress</span>.<span style="color:#a6e22e">SetValue</span>(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">statusOptions</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">NewGridLayout</span>(<span style="color:#ae81ff">2</span>), <span style="color:#a6e22e">statusLabel</span>, <span style="color:#a6e22e">progress</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">button</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">Button</span>
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Кнопка кроме имени принимает еще и функцию-обработчик нажатия
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">button</span> = <span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">NewButton</span>(<span style="color:#e6db74">&#34;Send&#34;</span>, <span style="color:#66d9ef">func</span>() {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Блокируем кнопку
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">button</span>.<span style="color:#a6e22e">Disable</span>()
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Проверяем введенные значения
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">amqpDsnInput</span>.<span style="color:#a6e22e">Text</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">showError</span>(<span style="color:#a6e22e">appInstance</span>, <span style="color:#e6db74">&#34;AMQP DSN required!&#34;</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">tokenServiceQueueName</span>.<span style="color:#a6e22e">Text</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">showError</span>(<span style="color:#a6e22e">appInstance</span>, <span style="color:#e6db74">&#34;Queue name required!&#34;</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">workersCount</span>.<span style="color:#a6e22e">Text</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">showError</span>(<span style="color:#a6e22e">appInstance</span>, <span style="color:#e6db74">&#34;Workers count required!&#34;</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">countMessagesPerWorker</span>.<span style="color:#a6e22e">Text</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">showError</span>(<span style="color:#a6e22e">appInstance</span>, <span style="color:#e6db74">&#34;Count messages per worker count required!&#34;</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Часть значений надо трактовать как int, поэтому тут использую atoi чтобы сконвертировать
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">workers</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Atoi</span>(<span style="color:#a6e22e">workersCount</span>.<span style="color:#a6e22e">Text</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">showError</span>(<span style="color:#a6e22e">appInstance</span>, <span style="color:#e6db74">&#34;Workers count must be an integer!&#34;</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">countMessages</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Atoi</span>(<span style="color:#a6e22e">countMessagesPerWorker</span>.<span style="color:#a6e22e">Text</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">showError</span>(<span style="color:#a6e22e">appInstance</span>, <span style="color:#e6db74">&#34;Messages count must be an integer!&#34;</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Сбрасываем прогресс бар
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">progress</span>.<span style="color:#a6e22e">SetValue</span>(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Запускаем воркеры
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">RunWorkers</span>(<span style="color:#a6e22e">amqpDsnInput</span>.<span style="color:#a6e22e">Text</span>, <span style="color:#a6e22e">tokenServiceQueueName</span>.<span style="color:#a6e22e">Text</span>, <span style="color:#a6e22e">tokenInput</span>.<span style="color:#a6e22e">Text</span>, <span style="color:#a6e22e">workers</span>, <span style="color:#a6e22e">countMessages</span>, <span style="color:#a6e22e">progress</span>)
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// После завершения включаем кнопку обратно
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">button</span>.<span style="color:#a6e22e">Enable</span>()
+</span></span><span style="display:flex;"><span>	})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Добавялем в контейнер главного окна все субконтейнеры
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">mainWindow</span>.<span style="color:#a6e22e">SetContent</span>(<span style="color:#a6e22e">container</span>.<span style="color:#a6e22e">New</span>(<span style="color:#a6e22e">layout</span>.<span style="color:#a6e22e">NewVBoxLayout</span>(),
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">amqpDsnOptions</span>, <span style="color:#a6e22e">tokenServiceQueueOptions</span>, <span style="color:#a6e22e">tokenOptions</span>, <span style="color:#a6e22e">workerCountOptions</span>, <span style="color:#a6e22e">countMessagesPerWorkerOptions</span>, <span style="color:#a6e22e">statusOptions</span>, <span style="color:#a6e22e">button</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">mainWindow</span>.<span style="color:#a6e22e">Resize</span>(<span style="color:#a6e22e">fyne</span>.<span style="color:#a6e22e">NewSize</span>(<span style="color:#ae81ff">600</span>, <span style="color:#ae81ff">200</span>))
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// И запускаем
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">mainWindow</span>.<span style="color:#a6e22e">ShowAndRun</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Ну и код, который запускается через <strong>RunWorker</strong>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;encoding/json&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;fyne.io/fyne/v2/widget&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;github.com/rabbitmq/amqp091-go&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;sync&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;time&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Функция-воркер, отправляет заданное кол-во сообщений в очередь, имитируя нагрузку
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">worker</span>(<span style="color:#a6e22e">channel</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">amqp091</span>.<span style="color:#a6e22e">Channel</span>, <span style="color:#a6e22e">queue</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">token</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">count</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">wg</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>, <span style="color:#a6e22e">progress</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">ProgressBar</span>, <span style="color:#a6e22e">step</span> <span style="color:#66d9ef">float64</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Чтобы не уйти в вечный блок нужно вызвать wg.Done для декремента счетчика в WaitGroup
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Done</span>()
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Отправляем сообщение в цикле
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">count</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">data</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#a6e22e">any</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">kwargs</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#a6e22e">any</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">headers</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#a6e22e">any</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">headers</span>[<span style="color:#e6db74">&#34;x-type&#34;</span>] = <span style="color:#e6db74">&#34;webhook&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">kwargs</span>[<span style="color:#e6db74">&#34;token&#34;</span>] = <span style="color:#a6e22e">token</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">kwargs</span>[<span style="color:#e6db74">&#34;amount&#34;</span>] = <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">kwargs</span>[<span style="color:#e6db74">&#34;access_right&#34;</span>] = <span style="color:#e6db74">&#34;atl&#34;</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">data</span>[<span style="color:#e6db74">&#34;type&#34;</span>] = <span style="color:#e6db74">&#34;Token.use&#34;</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">data</span>[<span style="color:#e6db74">&#34;kwargs&#34;</span>] = <span style="color:#a6e22e">kwargs</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">responseBytes</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">json</span>.<span style="color:#a6e22e">Marshal</span>(<span style="color:#a6e22e">data</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">channel</span>.<span style="color:#a6e22e">Publish</span>(<span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">queue</span>, <span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">false</span>, <span style="color:#a6e22e">amqp091</span>.<span style="color:#a6e22e">Publishing</span>{
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Body</span>:    <span style="color:#a6e22e">responseBytes</span>,
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">Headers</span>: <span style="color:#a6e22e">headers</span>,
+</span></span><span style="display:flex;"><span>		})
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>			panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Инкрементируем прогресс бар. Удобно, что значение бара хранится во float, поэтому можно рассчитать &#34;вес&#34; одной отправки, для более правильного инкремента.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">progress</span>.<span style="color:#a6e22e">SetValue</span>(<span style="color:#a6e22e">progress</span>.<span style="color:#a6e22e">Value</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">step</span>)
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Имитируем задержку
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Sleep</span>(<span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Second</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Функция запускающая горутины-воркеры, создает подключение, канал, запускает несколько горутин передавая им канал в качестве аргумента
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">RunWorkers</span>(<span style="color:#a6e22e">amqpDsn</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">queueName</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">token</span> <span style="color:#66d9ef">string</span>, <span style="color:#a6e22e">workersCount</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">messagesPerWorker</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">progress</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">widget</span>.<span style="color:#a6e22e">ProgressBar</span>) {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">connection</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">amqp091</span>.<span style="color:#a6e22e">Dial</span>(<span style="color:#a6e22e">amqpDsn</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">channel</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">connection</span>.<span style="color:#a6e22e">Channel</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">channel</span>.<span style="color:#a6e22e">Close</span>()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>		panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// WaitGroup используем для ожидания завершения всех воркеров
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">wg</span> <span style="color:#a6e22e">sync</span>.<span style="color:#a6e22e">WaitGroup</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">step</span> <span style="color:#f92672">:=</span> float64(<span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> float64(<span style="color:#a6e22e">workersCount</span><span style="color:#f92672">*</span><span style="color:#a6e22e">messagesPerWorker</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">workersCount</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// Инкрементируем счетчик воркеров для каждого запущенного воркера
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Add</span>(<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">go</span> <span style="color:#a6e22e">worker</span>(<span style="color:#a6e22e">channel</span>, <span style="color:#a6e22e">queueName</span>, <span style="color:#a6e22e">token</span>, <span style="color:#a6e22e">messagesPerWorker</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">wg</span>, <span style="color:#a6e22e">progress</span>, <span style="color:#a6e22e">step</span>)
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// Ждем пока счетчик не станет вновь равен нулю
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">wg</span>.<span style="color:#a6e22e">Wait</span>()
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+
+
+        <div class="footer">
+	<a href="/cv/en/">CV</a> | <a href="https://habr.com/ru/users/Dmitry89/">Habr</a> | <a href="https://medium.com/@dmitry8912/">Medium</a> | <a href="https://github.com/dmitry8912">GitHub</a> | <a href="https://otus.ru/instructors/2236">OTUS</a> | <a href="mailto:dmitry8912@gmail.com">Email</a> | <a href="https://t.me/dmitry8912">Telegram</a> | <a href="/posts">Archive</a>
+</div>
+
+    </div>
+  </body>
+</html>

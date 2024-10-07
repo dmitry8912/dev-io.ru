@@ -2,59 +2,53 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on dev-io.ru</title>
-    <link>https://dev-io.ru/posts/</link>
+    <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on dev-io.ru</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 12 Nov 2023 11:54:22 +0300</lastBuildDate><atom:link href="https://dev-io.ru/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 06 Oct 2024 20:34:11 +0300</lastBuildDate>
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>fyne - GUI для golang</title>
+      <link>http://localhost:1313/posts/0x006/</link>
+      <pubDate>Sun, 06 Oct 2024 20:34:11 +0300</pubDate>
+      <guid>http://localhost:1313/posts/0x006/</guid>
+      <description>&lt;h1 id=&#34;немного-о-gui&#34;&gt;Немного о GUI&lt;/h1&gt;&#xA;&lt;p&gt;Зачем вообще писать UI, если есть web? В некоторых случаях да, проще сделать web-приложение, тем более что фреймворки, типа &lt;a href=&#34;https://quasar.dev/&#34;&gt;Quasar&lt;/a&gt; во-первых имеют встроенную библиотеку ui-компонент, а во-вторых умеют собираться под разные платформы (в том числе и iOS\Android), и быть PWA, устанавливаемой на ПК\смартфон.&lt;/p&gt;&#xA;&lt;p&gt;Но в некоторых случаях нужно либо придать более дружелюбный пользователю интерфейс к изначально консольной утилите, либо же действительно сделать утилиту для локального запуска с поддержкой GUI.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Решение crackme от timotei_ (assembler)</title>
-      <link>https://dev-io.ru/posts/0x005/</link>
+      <link>http://localhost:1313/posts/0x005/</link>
       <pubDate>Sun, 12 Nov 2023 11:54:22 +0300</pubDate>
-      
-      <guid>https://dev-io.ru/posts/0x005/</guid>
-      <description>Данная crackme является оконным приложением, и написана на assembler. Наша задача состоит в том, чтобы понять алгоритм генерации ключа, найти валидный серийный номер, и написать кейген.
-Для анализа и проверки гипотез нам понадобится:
- IDA Python  Осмотр Запустив crackme мы видим одно окно, с полем для ввода серийного номера, и кнопкой, почему-то называющейся &amp;ldquo;Generate&amp;rdquo;, и очевидно отвечающей за проверку введенного серийного номера. Что бы я ни вводил в поле - статус по прежнему оставался &amp;ldquo;Unregistered&amp;rdquo;.</description>
+      <guid>http://localhost:1313/posts/0x005/</guid>
+      <description>&lt;p&gt;Данная &lt;a href=&#34;https://crackmes.one/crackme/649dbf9f33c5d460c17f1ec2&#34;&gt;crackme&lt;/a&gt; является оконным приложением, и написана на assembler. Наша задача состоит в том, чтобы понять алгоритм генерации ключа, найти валидный серийный номер, и написать кейген.&lt;/p&gt;&#xA;&lt;p&gt;Для анализа и проверки гипотез нам понадобится:&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;IDA&lt;/li&gt;&#xA;&lt;li&gt;Python&lt;/li&gt;&#xA;&lt;/ol&gt;</description>
     </item>
-    
     <item>
       <title>Решение .NET crackme от KilLo</title>
-      <link>https://dev-io.ru/posts/0x004/</link>
+      <link>http://localhost:1313/posts/0x004/</link>
       <pubDate>Sat, 11 Nov 2023 21:54:22 +0300</pubDate>
-      
-      <guid>https://dev-io.ru/posts/0x004/</guid>
-      <description>Решение crackme это (время от времени) достаточно увлекательное занятие, позволяющее взглянуть на некоторые вещи под непривычным углом. В этой статье я расскажу о том, как можно патчить скомпилированные .NET-приложения не прибегая к перекомпиляции.
-Автор crackme говорит, что ключ (понимание алгоритма генерации которого обычно, вместе с написанием генератора валдиных ключей, и является решением) случайным образом генерируется при старте приложения, и наша цель заключается в том, чтобы получить пропатченую версию, принимающую любой ключ.</description>
+      <guid>http://localhost:1313/posts/0x004/</guid>
+      <description>&lt;p&gt;Решение crackme это (время от времени) достаточно увлекательное занятие, позволяющее взглянуть на некоторые вещи под непривычным углом. В этой статье я расскажу о том, как можно патчить скомпилированные .NET-приложения не прибегая к перекомпиляции.&lt;/p&gt;&#xA;&lt;p&gt;Автор &lt;a href=&#34;https://crackmes.one/crackme/641d471733c5d447bc761c04&#34;&gt;crackme&lt;/a&gt; говорит, что ключ (понимание алгоритма генерации которого обычно, вместе с написанием генератора валдиных ключей, и является решением) случайным образом генерируется при старте приложения, и наша цель заключается в том, чтобы получить пропатченую версию, принимающую любой ключ.&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>SLAP - Programming language inspired by physical violence</title>
-      <link>https://dev-io.ru/posts/0x003/</link>
+      <link>http://localhost:1313/posts/0x003/</link>
       <pubDate>Thu, 21 Sep 2023 11:54:22 +0300</pubDate>
-      
-      <guid>https://dev-io.ru/posts/0x003/</guid>
-      <description>If you are reading this article I guess that you are interested in programming and building tools from scratch. Today I would like to tell you how to build a simple programming language and a virtual machine for its execution. Nowadays the community has a lot of technologies, languages and frameworks, so our current goal is not to invent “yet another useless language, and present it like a silver bullet”, but to understand how to design and animate programs written in our own language.</description>
+      <guid>http://localhost:1313/posts/0x003/</guid>
+      <description>&lt;p&gt;If you are reading this article I guess that you are interested in programming and building tools from scratch. Today I would like to tell you how to build a simple programming language and a virtual machine for its execution. Nowadays the community has a lot of technologies, languages and frameworks, so our current goal is not to invent “yet another useless language, and present it like a silver bullet”, but to understand how to design and animate programs written in our own language.&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Protected MBR</title>
-      <link>https://dev-io.ru/posts/0x002/</link>
+      <link>http://localhost:1313/posts/0x002/</link>
       <pubDate>Thu, 21 Sep 2023 11:54:19 +0300</pubDate>
-      
-      <guid>https://dev-io.ru/posts/0x002/</guid>
-      <description>Every programmer who wants to deeply understand the principles of the computer’s low-level work rules thinks about writing their own operating system. No matter how complicated your OS is going to be, the first thing you need to do is to implement the Main Boot Record (MBR). MBR is the first program that BIOS executes on the bootable device. That article describes how to implement custom MBR protected with a password.</description>
+      <guid>http://localhost:1313/posts/0x002/</guid>
+      <description>&lt;p&gt;Every programmer who wants to deeply understand the principles of the computer’s low-level work rules thinks about writing their own operating system. No matter how complicated your OS is going to be, the first thing you need to do is to implement the Main Boot Record (MBR). MBR is the first program that BIOS executes on the bootable device. That article describes how to implement custom MBR protected with a password.&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>Implementing timeouts in Python&#39;s asynchronous generators</title>
-      <link>https://dev-io.ru/posts/0x001/</link>
+      <link>http://localhost:1313/posts/0x001/</link>
       <pubDate>Thu, 21 Sep 2023 11:49:47 +0300</pubDate>
-      
-      <guid>https://dev-io.ru/posts/0x001/</guid>
-      <description>Every python programmer who worked over increasing the IO performance of their script knows about async and its powerful cooperative multitasking abilities. As you may know async in Python becomes possible because of enhanced generators implementation by PEP-342. Along 2 and 3 versions, the abilities of generators in Python grew up, and today we have a powerful mechanism that allows suspension and resuming tasks of the main application thread.
-In this article I would like to tell you about the solution to a specific problem, that is placed between generators and coroutines.</description>
+      <guid>http://localhost:1313/posts/0x001/</guid>
+      <description>&lt;p&gt;Every python programmer who worked over increasing the IO performance of their script knows about async and its powerful cooperative multitasking abilities. As you may know async in Python becomes possible because of enhanced generators implementation by PEP-342. Along 2 and 3 versions, the abilities of generators in Python grew up, and today we have a powerful mechanism that allows suspension and resuming tasks of the main application thread.&lt;/p&gt;&#xA;&lt;p&gt;In this article I would like to tell you about the solution to a specific problem, that is placed between generators and coroutines. That problem can be defined as a lack of ability to natively apply timeouts to asynchronous generators. Each yield pushes value to the caller function, but the caller never knows if the next value is being yielded  or not. This situation takes place when you build an RPC service over RabbitMQ. I&amp;rsquo;ll say a few words about it.&lt;/p&gt;</description>
     </item>
-    
   </channel>
 </rss>
