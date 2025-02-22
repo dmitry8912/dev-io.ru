@@ -2,73 +2,80 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>dev-io.ru</title>
-    <link>http://localhost:1313/</link>
+    <link>https://dev-io.ru/</link>
     <description>Recent content on dev-io.ru</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 06 Oct 2024 20:34:11 +0300</lastBuildDate>
-    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 22 Feb 2025 09:47:18 +0300</lastBuildDate>
+    <atom:link href="https://dev-io.ru/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Отмывание часов</title>
+      <link>https://dev-io.ru/posts/0x007/</link>
+      <pubDate>Sat, 22 Feb 2025 09:47:18 +0300</pubDate>
+      <guid>https://dev-io.ru/posts/0x007/</guid>
+      <description>&lt;p&gt;Мне правда очень не хочется, чтобы эта статья выглядела как среднестатичтическая дипломная работа выпускника специальности &amp;ldquo;Что-то там с чем-то, но точно есть слово &amp;ldquo;экономика&amp;rdquo; или &amp;ldquo;экономический\ая\ие&amp;rdquo;, где воды во введении больше, чем во всем мировом океане, но статья как раз про экономику и оплату труда.&lt;/p&gt;&#xA;&lt;p&gt;Заинтригованы заголовком, а? Ну-ка, признавайтесь! Хотя ладно, и так же понятно, что слова &amp;ldquo;мыть&amp;rdquo; и &amp;ldquo;пилить&amp;rdquo; означают некую &amp;ldquo;неправильную&amp;rdquo; заинтересованность в получении дополнительного бонуса к ежемесячной заработной плате. Попробую в рамках нижеизложенного собрать этакий overview по всем аспектам, технологиям, и последствиям подобных действий.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>fyne - GUI для golang</title>
-      <link>http://localhost:1313/posts/0x006/</link>
+      <link>https://dev-io.ru/posts/0x006/</link>
       <pubDate>Sun, 06 Oct 2024 20:34:11 +0300</pubDate>
-      <guid>http://localhost:1313/posts/0x006/</guid>
-      <description>&lt;p&gt;Зачем вообще писать UI, если есть web? В некоторых случаях да, проще сделать web-приложение, тем более что фреймворки, типа &lt;a href=&#34;https://quasar.dev/&#34;&gt;Quasar&lt;/a&gt; во-первых имеют встроенную библиотеку ui-компонент, а во-вторых умеют собираться под разные платформы (в том числе и iOS\Android), и быть PWA, устанавливаемой на ПК\смартфон.&lt;/p&gt;&#xA;&lt;p&gt;Но в некоторых случаях нужно либо придать более дружелюбный пользователю интерфейс к изначально консольной утилите, либо же действительно сделать утилиту для локального запуска с поддержкой GUI.&lt;/p&gt;&#xA;&lt;h1 id=&#34;gui-в-go&#34;&gt;GUI в Go&lt;/h1&gt;&#xA;&lt;p&gt;Что доступно в Go?&lt;/p&gt;</description>
+      <guid>https://dev-io.ru/posts/0x006/</guid>
+      <description>&lt;p&gt;Зачем вообще писать UI, если есть web? В некоторых случаях да, проще сделать web-приложение, тем более что фреймворки, типа &lt;a href=&#34;https://quasar.dev/&#34;&gt;Quasar&lt;/a&gt; во-первых имеют встроенную библиотеку ui-компонент, а во-вторых умеют собираться под разные платформы (в том числе и iOS\Android), и быть PWA, устанавливаемой на ПК\смартфон.&lt;/p&gt;&#xA;&lt;p&gt;Но в некоторых случаях нужно либо придать более дружелюбный пользователю интерфейс к изначально консольной утилите, либо же действительно сделать утилиту для локального запуска с поддержкой GUI.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Решение crackme от timotei_ (assembler)</title>
-      <link>http://localhost:1313/posts/0x005/</link>
+      <link>https://dev-io.ru/posts/0x005/</link>
       <pubDate>Sun, 12 Nov 2023 11:54:22 +0300</pubDate>
-      <guid>http://localhost:1313/posts/0x005/</guid>
+      <guid>https://dev-io.ru/posts/0x005/</guid>
       <description>&lt;p&gt;Данная &lt;a href=&#34;https://crackmes.one/crackme/649dbf9f33c5d460c17f1ec2&#34;&gt;crackme&lt;/a&gt; является оконным приложением, и написана на assembler. Наша задача состоит в том, чтобы понять алгоритм генерации ключа, найти валидный серийный номер, и написать кейген.&lt;/p&gt;&#xA;&lt;p&gt;Для анализа и проверки гипотез нам понадобится:&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;IDA&lt;/li&gt;&#xA;&lt;li&gt;Python&lt;/li&gt;&#xA;&lt;/ol&gt;</description>
     </item>
     <item>
       <title>Решение .NET crackme от KilLo</title>
-      <link>http://localhost:1313/posts/0x004/</link>
+      <link>https://dev-io.ru/posts/0x004/</link>
       <pubDate>Sat, 11 Nov 2023 21:54:22 +0300</pubDate>
-      <guid>http://localhost:1313/posts/0x004/</guid>
+      <guid>https://dev-io.ru/posts/0x004/</guid>
       <description>&lt;p&gt;Решение crackme это (время от времени) достаточно увлекательное занятие, позволяющее взглянуть на некоторые вещи под непривычным углом. В этой статье я расскажу о том, как можно патчить скомпилированные .NET-приложения не прибегая к перекомпиляции.&lt;/p&gt;&#xA;&lt;p&gt;Автор &lt;a href=&#34;https://crackmes.one/crackme/641d471733c5d447bc761c04&#34;&gt;crackme&lt;/a&gt; говорит, что ключ (понимание алгоритма генерации которого обычно, вместе с написанием генератора валдиных ключей, и является решением) случайным образом генерируется при старте приложения, и наша цель заключается в том, чтобы получить пропатченую версию, принимающую любой ключ.&lt;/p&gt;</description>
     </item>
     <item>
       <title>SLAP - Programming language inspired by physical violence</title>
-      <link>http://localhost:1313/posts/0x003/</link>
+      <link>https://dev-io.ru/posts/0x003/</link>
       <pubDate>Thu, 21 Sep 2023 11:54:22 +0300</pubDate>
-      <guid>http://localhost:1313/posts/0x003/</guid>
+      <guid>https://dev-io.ru/posts/0x003/</guid>
       <description>&lt;p&gt;If you are reading this article I guess that you are interested in programming and building tools from scratch. Today I would like to tell you how to build a simple programming language and a virtual machine for its execution. Nowadays the community has a lot of technologies, languages and frameworks, so our current goal is not to invent “yet another useless language, and present it like a silver bullet”, but to understand how to design and animate programs written in our own language.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Protected MBR</title>
-      <link>http://localhost:1313/posts/0x002/</link>
+      <link>https://dev-io.ru/posts/0x002/</link>
       <pubDate>Thu, 21 Sep 2023 11:54:19 +0300</pubDate>
-      <guid>http://localhost:1313/posts/0x002/</guid>
+      <guid>https://dev-io.ru/posts/0x002/</guid>
       <description>&lt;p&gt;Every programmer who wants to deeply understand the principles of the computer’s low-level work rules thinks about writing their own operating system. No matter how complicated your OS is going to be, the first thing you need to do is to implement the Main Boot Record (MBR). MBR is the first program that BIOS executes on the bootable device. That article describes how to implement custom MBR protected with a password.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Implementing timeouts in Python&#39;s asynchronous generators</title>
-      <link>http://localhost:1313/posts/0x001/</link>
+      <link>https://dev-io.ru/posts/0x001/</link>
       <pubDate>Thu, 21 Sep 2023 11:49:47 +0300</pubDate>
-      <guid>http://localhost:1313/posts/0x001/</guid>
+      <guid>https://dev-io.ru/posts/0x001/</guid>
       <description>&lt;p&gt;Every python programmer who worked over increasing the IO performance of their script knows about async and its powerful cooperative multitasking abilities. As you may know async in Python becomes possible because of enhanced generators implementation by PEP-342. Along 2 and 3 versions, the abilities of generators in Python grew up, and today we have a powerful mechanism that allows suspension and resuming tasks of the main application thread.&lt;/p&gt;&#xA;&lt;p&gt;In this article I would like to tell you about the solution to a specific problem, that is placed between generators and coroutines. That problem can be defined as a lack of ability to natively apply timeouts to asynchronous generators. Each yield pushes value to the caller function, but the caller never knows if the next value is being yielded  or not. This situation takes place when you build an RPC service over RabbitMQ. I&amp;rsquo;ll say a few words about it.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Cv</title>
-      <link>http://localhost:1313/cv/my_cv/</link>
+      <link>https://dev-io.ru/cv/my_cv/</link>
       <pubDate>Thu, 21 Sep 2023 11:12:40 +0300</pubDate>
-      <guid>http://localhost:1313/cv/my_cv/</guid>
+      <guid>https://dev-io.ru/cv/my_cv/</guid>
       <description></description>
     </item>
     <item>
       <title>Cv</title>
-      <link>http://localhost:1313/cv/ru/</link>
+      <link>https://dev-io.ru/cv/ru/</link>
       <pubDate>Thu, 21 Sep 2023 11:12:40 +0300</pubDate>
-      <guid>http://localhost:1313/cv/ru/</guid>
+      <guid>https://dev-io.ru/cv/ru/</guid>
       <description></description>
     </item>
     <item>
       <title>CV (en)</title>
-      <link>http://localhost:1313/cv/en/</link>
+      <link>https://dev-io.ru/cv/en/</link>
       <pubDate>Thu, 21 Sep 2023 11:12:40 +0300</pubDate>
-      <guid>http://localhost:1313/cv/en/</guid>
+      <guid>https://dev-io.ru/cv/en/</guid>
       <description>&lt;h2 id=&#34;personal-information--overview&#34;&gt;Personal Information &amp;amp; Overview&lt;/h2&gt;&#xA;&lt;p&gt;Name: Pankrashov Dmitry&lt;/p&gt;&#xA;&lt;p&gt;About me:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;8+ years of experience working on real-world software, with disturbed teams&lt;/li&gt;&#xA;&lt;li&gt;Have an experience in software &amp;amp; hardware engineering (network engineering, higload)&lt;/li&gt;&#xA;&lt;li&gt;Intrested in low-level system programming&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;stack--skills&#34;&gt;Stack &amp;amp; skills&lt;/h2&gt;&#xA;&lt;p&gt;Operating systems:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Windows&lt;/li&gt;&#xA;&lt;li&gt;Linux (Ubuntu, CentOS, Fedora)&#xA;&lt;ul&gt;&#xA;&lt;li&gt;bash&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Stack:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Backend&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Docker &amp;amp; K8s&lt;/li&gt;&#xA;&lt;li&gt;Databases&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Microsoft SQL Server&lt;/li&gt;&#xA;&lt;li&gt;PostgreSQL&lt;/li&gt;&#xA;&lt;li&gt;MySQL&lt;/li&gt;&#xA;&lt;li&gt;Redis&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;Messqge queues&#xA;&lt;ul&gt;&#xA;&lt;li&gt;RabbitMQ&lt;/li&gt;&#xA;&lt;li&gt;Apache Kafka&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;PHP (5,7,8)&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Pure PHP&lt;/li&gt;&#xA;&lt;li&gt;Laravel&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;.NET.NET Core (C#)&#xA;&lt;ul&gt;&#xA;&lt;li&gt;ASP.NET MVC&lt;/li&gt;&#xA;&lt;li&gt;EntityFramework&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;Python 3 (3.5+)&#xA;&lt;ul&gt;&#xA;&lt;li&gt;SQLAlchemy&lt;/li&gt;&#xA;&lt;li&gt;Alembic&lt;/li&gt;&#xA;&lt;li&gt;Asyncio&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;Frontend&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Vue.js (Quasar framework)&lt;/li&gt;&#xA;&lt;li&gt;jQuery&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;experience--projects&#34;&gt;Experience &amp;amp; Projects&lt;/h2&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Backend Python\C# developer at Sber AR\VR Lab&lt;/li&gt;&#xA;&lt;li&gt;Experienced in building microservice architecrue&lt;/li&gt;&#xA;&lt;li&gt;Have an experience in backend profiling, searching for performance bottlenecks (with Prometheus, Jaeger)&lt;/li&gt;&#xA;&lt;li&gt;You can see other projects in my &lt;a href=&#34;https://github.com/dmitry8912&#34;&gt;GitHub&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;other&#34;&gt;Other&lt;/h2&gt;&#xA;&lt;p&gt;Teacher of the following courses at OTUS online education:&lt;/p&gt;</description>
     </item>
   </channel>
